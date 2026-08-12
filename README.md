@@ -63,11 +63,21 @@ The individual items, for reference:
 | \[wOS\] DynaBase Legacy Extensions | King David™ | [2917050373](https://steamcommunity.com/sharedfiles/filedetails/?id=2917050373) |
 | Counter Strike 1.6 — Quake Sounds+ | disastrous | [3776584981](https://steamcommunity.com/sharedfiles/filedetails/?id=3776584981) |
 | Half-Life 1 Prop Pack | Sirgibsalot | [665025902](https://steamcommunity.com/sharedfiles/filedetails/?id=665025902) |
+| Half-Life 1 Prop Pack material fix | — | [2936062910](https://steamcommunity.com/sharedfiles/filedetails/?id=2936062910) |
 
 The prop pack is only needed by the developer prop menu, but it is needed by
 name: the gamemode ships an explicit list of its 742 models rather than scanning
 for them, so without it that menu offers props the server cannot spawn. Nothing
 a player does touches it.
+
+**Install the material fix alongside it.** Without it a good many of those props
+render untextured — the pack's materials do not all resolve on their own, and
+the symptom is purple-and-black checkerboard rather than an error anybody can
+act on.
+
+Go by the ID rather than the name when you look for it. It has been reuploaded
+more than once and turns up under several titles, some of which mention a camera
+fix; they are the same thing, and the link above is the one to use.
 
 The two DynaBase addons are the animation base the weapon packs are built on —
 without them players hold weapons like Half-Life 2 citizens.
@@ -86,13 +96,24 @@ them and a wrong guess sends you reading code that isn't running.
 
 Any bomb-defusal map works in principle, provided it carries the usual
 `info_player_terrorist` / `info_player_counterterrorist`, `func_buyzone` and
-`func_bomb_target` entities. Only one is currently tested:
+`func_bomb_target` entities. These are the four that have actually been played
+on, and the ones the gamemode ships authored layouts for:
 
-| Map | Author | Workshop |
-|---|---|---|
-| `de_dust2_classic` | White_Mask (re-upload) | [2508187204](https://steamcommunity.com/sharedfiles/filedetails/?id=2508187204) |
+| Map | Title | Workshop | Set up for |
+|---|---|---|---|
+| `de_dust2_classic` | de_dust2_classic | [2508187204](https://steamcommunity.com/sharedfiles/filedetails/?id=2508187204) | Defusal, battle royale |
+| `cs16_italy` | Italy from Counter-Strike 1.6 | [2179766822](https://steamcommunity.com/sharedfiles/filedetails/?id=2179766822) | Hostage rescue |
+| `cs_cs16_assault` | cs_assault from CS 1.6 | [357662134](https://steamcommunity.com/sharedfiles/filedetails/?id=357662134) | Hostage rescue |
+| `de_vertigo_csbeta` | Port Vertigo (CSbeta + GMOD Goldsrc) | [3691140782](https://steamcommunity.com/sharedfiles/filedetails/?id=3691140782) | Battle royale |
 
-The map is in the collection too.
+Which objective a map plays is decided by what has been authored onto it rather
+than by any setting — a map with bomb sites plays defusal, one with hostage
+spots plays rescue. See [Authoring map objectives](#authoring-map-objectives).
+
+Every map needs a navmesh, and `cs16_italy` is the only one of these that ships
+with one. See [Every map needs a navmesh](#every-map-needs-a-navmesh).
+
+The maps are in the collection too.
 
 All credit for that content belongs to its authors — this project only supplies
 the rules layer. See [Credits](#credits).
