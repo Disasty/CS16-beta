@@ -1,0 +1,9 @@
+"counterstrike16"
+{
+	"base"			"base"
+	"title"			"Counter-Strike 1.6"
+	"author"		"disastrous"
+	"category"		"pvp"
+	"maps"			"^de_|^cs_"
+	"menusystem"	"1"
+}

@@ -1,0 +1,8 @@
+"UnLitGeneric"
+{
+	"$basetexture" "cs/sprites/phaser_selecticon"
+	"$vertexalpha" "1"
+	"$vertexcolor" "1"
+	"$additive" "1"
+	"$color" "[ 1 0.75 0 ]"
+}

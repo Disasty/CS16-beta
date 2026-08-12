@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/weapons/cs16_phaser/knuckle"
+	"$model" 1
+	"$nodecal" 1
+}

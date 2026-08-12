@@ -1,0 +1,30 @@
+# This repository lives inside a Garry's Mod dedicated server install, but only
+# the gamemode itself belongs in version control. Everything else here is either
+# Facepunch's, Valve's, somebody's Workshop content, or server-local state.
+#
+# So: ignore everything, then re-admit the few paths we own. A whitelist rather
+# than a blacklist, because the cost of accidentally committing addons/ or the
+# server binaries is far higher than the cost of having to add a path by hand.
+#
+# Note git cannot re-include anything inside an excluded directory, which is why
+# each level is un-ignored before its contents are filtered.
+
+/*
+
+# Repository furniture
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/LICENSE
+
+# The gamemode, and only the gamemode
+!/gamemodes/
+/gamemodes/*
+!/gamemodes/counterstrike16/
+
+# Editor and OS noise
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini

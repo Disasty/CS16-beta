@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/weapons/cs16_phaser/handpak"
+	"$model" 1
+	"$nodecal" 1
+}

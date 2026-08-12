@@ -1,0 +1,21 @@
+# Normalise to LF in the repository. Developed on Windows, but Garry's Mod
+# servers are as often Linux, and mixed endings make diffs unreadable.
+* text=auto eol=lf
+
+# Game content is binary, and stated rather than detected. text=auto gets this
+# right nearly always, and "nearly" is the wrong bar for model and texture
+# files: a single mangled byte is an invisible corruption that shows up as a
+# missing model in game and as nothing at all in a diff.
+#
+# .vmt is deliberately absent - it really is a text file.
+*.mdl binary
+*.vtx binary
+*.vvd binary
+*.phy binary
+*.ani binary
+*.vtf binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.png binary
+*.jpg binary
