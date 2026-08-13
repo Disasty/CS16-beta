@@ -242,6 +242,22 @@ local function DrawBanner( ply )
 	if state == ROUND_WARMUP then
 		CS16.DrawText( "WAITING FOR PLAYERS", "CS16.Heading", ScrW() * 0.5, y,
 			CS16.Colors.Muted, TEXT_ALIGN_CENTER )
+
+		--[[
+			And why, when the mode has said.
+
+			"Waiting for players" on a server full of players is a dead end: the
+			real answer is usually that the map has nothing authored onto it, and
+			battle royale sets exactly that reason and had nowhere to put it. It
+			cost an evening working out why vertigo never started.
+		]]
+		local reason = CS16.GetRoundEndReason()
+
+		if reason and reason ~= "" and reason ~= "Waiting for players" then
+			CS16.DrawText( reason, "CS16.Small", ScrW() * 0.5, y + 24,
+				CS16.Colors.Gold, TEXT_ALIGN_CENTER )
+		end
+
 		return
 	end
 

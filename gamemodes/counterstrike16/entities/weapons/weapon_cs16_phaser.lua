@@ -29,7 +29,15 @@ SWEP.PrintName = "Phaser"
 -- rather than sit in an addon. See the Credits section of the README.
 SWEP.Author    = "Model by Scarecrow and Tony Paloma"
 SWEP.Purpose   = "Pick up and carry props, like the physgun."
-SWEP.Category  = "Counter-Strike 1.6"
+--[[
+	Other, rather than Counter-Strike 1.6.
+
+	It belongs with the tools it replaces - the physics gun and the tool gun -
+	not filed among the guns of a game it only happens to have been written for.
+	Somebody who installs it standalone is looking for a physgun, and that is
+	where they will look.
+]]
+SWEP.Category  = "Other"
 
 if CLIENT then
 	--[[
@@ -52,7 +60,13 @@ end
 	autorun/server/cs16_phaser.lua, and there is no reason for this to be
 	listed as spawnable at all.
 ]]
-SWEP.Spawnable      = false
+--[[
+	Spawnable so it appears in the sandbox weapons list, admin-only so it is not
+	handed to everybody on a public server. Neither changes anything under the
+	Counter-Strike gamemode, which has no spawn menu and decides who carries one
+	through PlayerCanPickupWeapon instead.
+]]
+SWEP.Spawnable      = true
 SWEP.AdminOnly      = true
 SWEP.DrawCrosshair  = true
 --[[
@@ -849,15 +863,39 @@ function SWEP:FreezeHeld()
 end
 
 --[[
+	What may be deleted.
+
+	Defers to the gamemode when there is one, because it has a narrower idea:
+	only props its own menu spawned. On its own - in sandbox, or beside any
+	other gamemode - there is no such list, so the rule is the general one that
+	matters. Nothing alive, nothing carried by the engine, and nothing the map
+	placed.
+
+	This is the only thing in the weapon that ever needed the gamemode, and
+	asking rather than requiring is what lets the same file be an addon.
+]]
+local function CanRemove( ent )
+	if CS16 and isfunction( CS16.CanRemoveProp ) then
+		return CS16.CanRemoveProp( ent )
+	end
+
+	if not IsValid( ent ) then return false end
+	if ent:IsPlayer() or ent:IsNPC() or ent:IsWeapon() then return false end
+	if ent:CreatedByMap() then return false end
+
+	return true
+end
+
+--[[
 	Reload deletes what is being carried, or what is being looked at.
 
 	Carried first, because pointing at a prop in your hands traces through to
 	the wall behind it as often as not, and deleting the thing you are holding
 	is unambiguous.
 
-	What may go is CS16.CanRemoveProp's decision, and it is deliberately narrow:
-	anything the map placed is refused. A developer tool that can delete the map
-	by pointing at it is a developer tool that eventually does.
+	What may go is CanRemove's decision, and it is deliberately narrow: anything
+	the map placed is refused. A tool that can delete the map by pointing at it
+	is a tool that eventually does.
 ]]
 function SWEP:RemoveAimed()
 	if CLIENT then return end
@@ -868,7 +906,7 @@ function SWEP:RemoveAimed()
 	local ent = self:GetHeldEntity()
 	if not IsValid( ent ) then ent = ply:GetEyeTrace().Entity end
 
-	if not CS16.CanRemoveProp( ent ) then return end
+	if not CanRemove( ent ) then return end
 
 	if IsValid( self:GetHeldEntity() ) then
 		self:Release()
