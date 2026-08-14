@@ -116,6 +116,26 @@ CS16.RegisterLanguage( "en", "English", {
 ["gg.win"]                  = "{player} finished the ladder and wins the game.",
 ["gg.knife"]                = "{player} is on the knife, one kill to win.",
 
+--[[ Scoreboard -----------------------------------------------------------]]
+
+["scoreboard.developers"]       = "Developers",
+["scoreboard.terrorists"]       = "Terrorists",
+["scoreboard.counterterrorists"] = "Counter-Terrorists",
+["scoreboard.spectators"]       = "Spectators",
+
+["scoreboard.section"]          = {
+	one   = "{title} - {count} player",
+	other = "{title} - {count} players",
+},
+
+["scoreboard.level"]            = "Level",
+["scoreboard.score"]            = "Score",
+["scoreboard.deaths"]           = "Deaths",
+["scoreboard.latency"]          = "Latency",
+["scoreboard.dead"]             = "Dead",
+["scoreboard.kit"]              = "D. Kit",
+["scoreboard.info"]             = "{map}   {players}/{max} players",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Language: {name} ({code})",

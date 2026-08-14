@@ -103,8 +103,8 @@ on, and the ones the gamemode ships authored layouts for:
 | Map | Title | Workshop | Set up for |
 |---|---|---|---|
 | `de_dust2_classic` | de_dust2_classic | [2508187204](https://steamcommunity.com/sharedfiles/filedetails/?id=2508187204) | Defusal, battle royale |
-| `cs16_italy` | Italy from Counter-Strike 1.6 | [2179766822](https://steamcommunity.com/sharedfiles/filedetails/?id=2179766822) | Hostage rescue |
-| `cs_cs16_assault` | cs_assault from CS 1.6 | [357662134](https://steamcommunity.com/sharedfiles/filedetails/?id=357662134) | Hostage rescue |
+| `cs16_italy` | Italy from Counter-Strike 1.6 | [2179766822](https://steamcommunity.com/sharedfiles/filedetails/?id=2179766822) | Hostage rescue, battle royale |
+| `cs_cs16_assault` | cs_assault from CS 1.6 | [357662134](https://steamcommunity.com/sharedfiles/filedetails/?id=357662134) | Hostage rescue, battle royale |
 | `de_vertigo_csbeta` | Port Vertigo (CSbeta + GMOD Goldsrc) | [3691140782](https://steamcommunity.com/sharedfiles/filedetails/?id=3691140782) | Battle royale |
 
 Which objective a map plays is decided by what has been authored onto it rather
@@ -361,6 +361,35 @@ Everything placed is drawn in the world for developers, and each set has its own
 map up, and a hedge of labelled posts between you and the map every other minute.
 The choice is archived per client, so it survives the map change that follows
 every match.
+
+## Publishing to the Workshop
+
+Two things about this trip people up, and both fail quietly rather than loudly.
+
+**Package from a staging tree, not from this repository.** A gamemode `.gma` needs
+`gamemodes/counterstrike16/` at its root. This repository *is* `garrysmod/`, so
+pointing a packager at it sweeps in `addons/`, `data/`, and anything else sitting
+on that server. Assemble a folder containing exactly two things and package that:
+
+```
+addon.json                     type "gamemode", gamemodename "counterstrike16"
+gamemodes/counterstrike16/     a copy of this folder
+```
+
+`workshop/stage-gamemode.sh` builds exactly that, from scratch each run so a file
+you deleted cannot live on in the upload, and refuses to finish if anything
+unexpected ends up staged.
+
+**Authored map layouts only exist on the server they were authored on.**
+`/hostagespot`, `/rescuezone`, `/brspawn` and `/brloot` write to
+`data/cs16/zones/<map>.json`, which is not tracked and does not ship. To make a
+layout travel, run `/zonesexport` and move the result into
+`gamemode/core/modules/zones/maps/<map>.lua`.
+
+Skipping that is the most confusing failure in this project: the map plays fine
+where it was built and sits in warmup forever anywhere else, which looks like a
+server or engine problem and is neither. Run `/brcheck` before exporting a battle
+royale layout, since it also catches points the navmesh cannot reach.
 
 ## Layout
 

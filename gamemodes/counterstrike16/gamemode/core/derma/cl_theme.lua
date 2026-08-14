@@ -17,8 +17,12 @@ CS16.Colors = {
 	Danger     = Color( 220, 60, 50 ),
 	Shadow     = Color( 0, 0, 0, 200 ),
 
-	T          = Color( 224, 176, 64 ),
-	CT         = Color( 108, 160, 220 ),
+	-- 1.6 frames its scoreboard in a dull amber and writes the title and column
+	-- labels in the same, not in the bright gold the rest of our panels use.
+	Amber      = Color( 200, 145, 60 ),
+
+	T          = Color( 235, 70, 60 ),
+	CT         = Color( 105, 165, 245 ),
 }
 
 surface.CreateFont( "CS16.Title", {

@@ -34,9 +34,22 @@ TEAM_DEV = 3
 ]]
 TEAM_BR = 4
 
+--[[
+	Red and blue, because that is what 1.6 is.
+
+	Terrorists used to be a gold-orange, which put them at the same colour as
+	the panel frames and the headings, and a scoreboard drawn in one colour
+	does not read as two teams facing each other. The red-against-blue split is
+	most of what makes 1.6's scoreboard legible at a glance, and it belongs
+	here rather than in the scoreboard alone: the kill feed, the chat, the
+	target ID and the round result all name a side, and all of them were gold.
+
+	Battle royale keeps the amber. There are no sides in it to tell apart, and
+	red would read as one.
+]]
 CS16.TeamColors = {
-	[TEAM_T]         = Color( 224, 176, 64 ),
-	[TEAM_CT]        = Color( 108, 160, 220 ),
+	[TEAM_T]         = Color( 235, 70, 60 ),
+	[TEAM_CT]        = Color( 105, 165, 245 ),
 	[TEAM_DEV]       = Color( 90, 200, 90 ),
 	[TEAM_BR]        = Color( 224, 176, 64 ),
 	[TEAM_SPECTATOR] = Color( 160, 160, 160 ),

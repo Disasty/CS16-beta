@@ -144,6 +144,27 @@ CS16.RegisterLanguage( "pt", "Português", {
 ["gg.win"]                  = "{player} completou a escada de armas e venceu o jogo.",
 ["gg.knife"]                = "{player} está na faca, uma morte para vencer.",
 
+--[[ Scoreboard -----------------------------------------------------------]]
+
+["scoreboard.developers"]       = "Desenvolvedores",
+["scoreboard.terrorists"]       = "Terroristas",
+["scoreboard.counterterrorists"] = "Contra-Terroristas",
+["scoreboard.spectators"]       = "Espectadores",
+
+["scoreboard.section"]          = {
+	one   = "{title} - {count} jogador",
+	other = "{title} - {count} jogadores",
+},
+
+["scoreboard.level"]            = "Nível",
+["scoreboard.score"]            = "Pontos",
+
+["scoreboard.deaths"]           = "Mortes",
+["scoreboard.latency"]          = "Latência",
+["scoreboard.dead"]             = "Morto",
+["scoreboard.kit"]              = "Kit",
+["scoreboard.info"]             = "{map}   {players}/{max} jogadores",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Idioma: {name} ({code})",

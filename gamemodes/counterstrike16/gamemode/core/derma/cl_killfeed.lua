@@ -106,19 +106,23 @@ net.Receive( "CS16.Kill", function()
 	local kind  = net.ReadUInt( 2 )
 	local entry = { kind = kind, time = CurTime() }
 
+	--[[
+		The two entities are read and discarded. Nothing needs them now that
+		names are coloured by side alone, but a net message has to be read in
+		the order it was written: skipping these would leave every field after
+		them decoding somebody else's bytes.
+	]]
 	if kind == KILL_PLAYER then
-		local ent = net.ReadEntity()
+		net.ReadEntity()
 
 		entry.killer     = net.ReadString()
 		entry.killerTeam = net.ReadUInt( 11 )
-		entry.killerIsMe = ent == LocalPlayer()
 	end
 
-	local victimEnt = net.ReadEntity()
+	net.ReadEntity()
 
 	entry.victim     = net.ReadString()
 	entry.victimTeam = net.ReadUInt( 11 )
-	entry.victimIsMe = victimEnt == LocalPlayer()
 
 	local class = net.ReadString()
 	entry.headshot = net.ReadBool()
@@ -137,11 +141,16 @@ net.Receive( "CS16.Kill", function()
 	if #entries > MAX_ENTRIES then table.remove( entries, 1 ) end
 end )
 
-local function NameColour( isMe, teamID, alpha )
-	-- Your own name stands out from the two team colours.
-	local base = isMe and CS16.Colors.White
-		or ( CS16.TeamColors[ teamID ] or CS16.Colors.Muted )
+--[[
+	Everyone reads in their side's colour, yourself included.
 
+	Your own name used to be drawn white to stand out, which cost more than it
+	gave: in a feed that is entirely red against blue, the one grey name is the
+	one you cannot place on a side. Position already tells you which half of
+	the line is the killer.
+]]
+local function NameColour( teamID, alpha )
+	local base = CS16.TeamColors[ teamID ] or CS16.Colors.Muted
 	return Color( base.r, base.g, base.b, alpha )
 end
 
@@ -175,7 +184,7 @@ local function DrawEntry( entry, y, alpha )
 	local iconY = y + ( 14 - iconH ) * 0.5
 
 	if killerW > 0 then
-		Text( entry.killer, x, y, NameColour( entry.killerIsMe, entry.killerTeam, alpha ) )
+		Text( entry.killer, x, y, NameColour( entry.killerTeam, alpha ) )
 		x = x + killerW + GAP
 	end
 
@@ -192,7 +201,7 @@ local function DrawEntry( entry, y, alpha )
 		x = x + headW + GAP
 	end
 
-	Text( entry.victim, x, y, NameColour( entry.victimIsMe, entry.victimTeam, alpha ) )
+	Text( entry.victim, x, y, NameColour( entry.victimTeam, alpha ) )
 end
 
 hook.Add( "HUDPaint", "CS16.KillFeed", function()
