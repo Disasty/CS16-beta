@@ -297,8 +297,8 @@ local function StartWarmup()
 	SetState( ROUND_WARMUP, nil )
 
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason",
-		#CS16.BRSpawns == 0 and "No spawns placed - use /brspawn" or "Waiting for players" )
+	CS16.SetRoundEndReason( #CS16.BRSpawns == 0
+		and "round.br.nospawns" or "round.waiting" )
 
 	--[[
 		Cleared here rather than only at map load, now that warmup is somewhere
@@ -348,7 +348,7 @@ end
 local function StartMatch()
 	SetGlobalInt( "CS16.Round", CS16.GetRoundNumber() + 1 )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "" )
+	CS16.SetRoundEndReason( nil )
 
 	DealSpawns()
 
@@ -392,20 +392,20 @@ local function EndMatch( winner )
 	SetGlobalString( "CS16.MatchWinnerName", IsValid( winner ) and winner:Nick() or "" )
 
 	if IsValid( winner ) then
-		SetGlobalString( "CS16.EndReason", winner:Nick() .. " is the last one standing." )
+		CS16.SetRoundEndReason( "round.end.br.winner", winner:Nick() )
 
 		-- The record, which is the whole point of turning up.
 		if CS16.AddWin then CS16.AddWin( winner ) end
 
 		CS16.BroadcastSound( CS16.Config.Sounds.RoundStart )
 	else
-		SetGlobalString( "CS16.EndReason", "Nobody survived." )
+		CS16.SetRoundEndReason( "round.end.br.nobody" )
 		CS16.BroadcastSound( CS16.Config.Sounds.Draw )
 	end
 
 	for _, ply in ipairs( player.GetAll() ) do
 		ply:Freeze( false )
-		ply:ChatPrint( "[CS 1.6] " .. CS16.GetRoundEndReason() )
+		CS16.Msg( ply, CS16.EndReasonKey(), { player = GetGlobalString( "CS16.EndReasonArg", "" ) } )
 	end
 
 	--[[
@@ -474,7 +474,7 @@ hook.Add( "Think", "CS16.BRThink", function()
 			-- match that is about to be one person.
 			if counting then
 				SetState( ROUND_WARMUP, nil )
-				SetGlobalString( "CS16.EndReason", "Waiting for players" )
+				CS16.SetRoundEndReason( "round.waiting" )
 			end
 
 			return
@@ -482,7 +482,7 @@ hook.Add( "Think", "CS16.BRThink", function()
 
 		if not counting then
 			SetState( ROUND_WARMUP, cfg.StartCountdown )
-			SetGlobalString( "CS16.EndReason", "Match starting" )
+			CS16.SetRoundEndReason( "round.matchstarting" )
 
 			--[[
 				Held still for the wait, the way freeze time works in

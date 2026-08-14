@@ -61,8 +61,38 @@ function CS16.GetRoundWinner()
 	return GetGlobalInt( "CS16.Winner", 0 )
 end
 
-function CS16.GetRoundEndReason()
+--[[
+	Why the round or the warmup is where it is.
+
+	The global holds a language key rather than a sentence, and the client
+	turns it into words. That is what lets two players watching the same round
+	read the result in two different languages off one networked string.
+
+	One optional argument travels with it, which is all any reason has ever
+	needed: a player's name, or a bomb site letter.
+
+	CS16.EndReasonKey is the raw key. Code that wants to know *which* reason is
+	set must compare against that and never against the translated text, which
+	changes with whoever is reading it.
+]]
+function CS16.SetRoundEndReason( key, arg )
+	SetGlobalString( "CS16.EndReason", key or "" )
+	SetGlobalString( "CS16.EndReasonArg", arg and tostring( arg ) or "" )
+end
+
+function CS16.EndReasonKey()
 	return GetGlobalString( "CS16.EndReason", "" )
+end
+
+function CS16.GetRoundEndReason()
+	local key = GetGlobalString( "CS16.EndReason", "" )
+	if key == "" then return "" end
+
+	local arg = GetGlobalString( "CS16.EndReasonArg", "" )
+
+	-- Both names are offered because the caller knows which one it set, and
+	-- the string knows which one it wants.
+	return CS16.L( key, { player = arg, site = arg, name = arg } )
 end
 
 --[[

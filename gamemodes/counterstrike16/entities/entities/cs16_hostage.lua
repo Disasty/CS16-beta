@@ -131,12 +131,12 @@ function ENT:Use( activator )
 
 	if self:GetFollower() == activator then
 		self:SetFollower( NULL )
-		activator:ChatPrint( "The hostage stays here." )
+		CS16.Msg( activator, "hostage.stay" )
 		return
 	end
 
 	self:SetFollower( activator )
-	activator:ChatPrint( "The hostage is following you." )
+	CS16.Msg( activator, "hostage.follow" )
 
 	hook.Run( "CS16HostageTaken", self, activator )
 end

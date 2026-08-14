@@ -63,11 +63,12 @@ local function DrawTimer()
 	]]
 	local label
 	if CS16.IsBombPlanted() then
-		label = "BOMB PLANTED"
+		label = CS16.Upper( CS16.L( "hud.bombplanted" ) )
 	elseif state == ROUND_FREEZE then
-		label = "GET READY"
+		label = CS16.Upper( CS16.L( "hud.getready" ) )
 	elseif state == ROUND_HALFTIME then
-		label = ( CS16.GetOvertime() > 0 ) and "OVERTIME NEXT" or "HALFTIME"
+		label = CS16.Upper( CS16.L( ( CS16.GetOvertime() > 0 )
+			and "hud.overtimenext" or "hud.halftime" ) )
 	end
 
 	if label then
@@ -101,7 +102,8 @@ local function DrawHostages()
 	local state = CS16.GetRoundState()
 	if state == ROUND_FREEZE or state == ROUND_HALFTIME then y = y + 18 end
 
-	CS16.DrawText( ("HOSTAGES  %d / %d"):format( rescued, total ), "CS16.Small", x, y,
+	CS16.DrawText( CS16.Upper( CS16.L( "hud.hostages",
+		{ rescued = rescued, total = total } ) ), "CS16.Small", x, y,
 		rescued >= total and CS16.Colors.CT or CS16.Colors.Gold, TEXT_ALIGN_CENTER )
 end
 
@@ -118,9 +120,8 @@ local function DrawHostageHint( ply )
 
 	for _, ent in ipairs( ents.FindByClass( "cs16_hostage" ) ) do
 		if IsValid( ent ) and pos:DistToSqr( ent:GetPos() ) < HINT_RANGE_SQR then
-			local text = ( ent:GetFollower() == ply )
-				and "Press USE to leave the hostage here"
-				or  "Press USE to move the hostage"
+			local text = CS16.L( ( ent:GetFollower() == ply )
+				and "hud.hostage.leave" or "hud.hostage.take" )
 
 			CS16.DrawText( text, "CS16.Text", ScrW() * 0.5, ScrH() - 120,
 				CS16.Colors.Gold, TEXT_ALIGN_CENTER )
@@ -184,7 +185,8 @@ local function DrawBanner( ply )
 		Defaults to true, which keeps every other mode reading exactly as it did.
 	]]
 	local function EndingText()
-		return GetGlobalBool( "CS16.MapChanging", true ) and "Changing map" or "Next round"
+		return CS16.L( GetGlobalBool( "CS16.MapChanging", true )
+		and "hud.changingmap" or "hud.nextround" )
 	end
 
 	-- The match result outranks anything a round has to say.
@@ -199,7 +201,8 @@ local function DrawBanner( ply )
 		local name = CS16.GetMatchWinnerName()
 
 		if name ~= "" then
-			CS16.DrawText( string.upper( name ) .. " WINS", "CS16.Title", ScrW() * 0.5, y,
+			CS16.DrawText( CS16.Upper( CS16.L( "hud.win.player", { player = name } ) ),
+				"CS16.Title", ScrW() * 0.5, y,
 				CS16.TeamColors[ winner ] or CS16.Colors.Gold, TEXT_ALIGN_CENTER )
 			CS16.DrawText( EndingText(), "CS16.Text", ScrW() * 0.5, y + 26,
 				CS16.Colors.Muted, TEXT_ALIGN_CENTER )
@@ -208,15 +211,15 @@ local function DrawBanner( ply )
 
 		local text, col
 		if winner == TEAM_T then
-			text, col = "TERRORISTS WIN THE MATCH", CS16.Colors.T
+			text, col = CS16.Upper( CS16.L( "hud.match.t" ) ), CS16.Colors.T
 		elseif winner == TEAM_CT then
-			text, col = "COUNTER-TERRORISTS WIN THE MATCH", CS16.Colors.CT
+			text, col = CS16.Upper( CS16.L( "hud.match.ct" ) ), CS16.Colors.CT
 		else
-			text, col = "MATCH DRAWN", CS16.Colors.Muted
+			text, col = CS16.Upper( CS16.L( "hud.match.draw" ) ), CS16.Colors.Muted
 		end
 
 		CS16.DrawText( text, "CS16.Title", ScrW() * 0.5, y, col, TEXT_ALIGN_CENTER )
-		CS16.DrawText( "Changing map", "CS16.Text", ScrW() * 0.5, y + 26,
+		CS16.DrawText( CS16.L( "hud.changingmap" ), "CS16.Text", ScrW() * 0.5, y + 26,
 			CS16.Colors.Muted, TEXT_ALIGN_CENTER )
 		return
 	end
@@ -226,11 +229,11 @@ local function DrawBanner( ply )
 
 		local text, col
 		if winner == TEAM_T then
-			text, col = "TERRORISTS WIN", CS16.Colors.T
+			text, col = CS16.Upper( CS16.L( "hud.win.t" ) ), CS16.Colors.T
 		elseif winner == TEAM_CT then
-			text, col = "COUNTER-TERRORISTS WIN", CS16.Colors.CT
+			text, col = CS16.Upper( CS16.L( "hud.win.ct" ) ), CS16.Colors.CT
 		else
-			text, col = "ROUND DRAW", CS16.Colors.Muted
+			text, col = CS16.Upper( CS16.L( "hud.win.draw" ) ), CS16.Colors.Muted
 		end
 
 		CS16.DrawText( text, "CS16.Title", ScrW() * 0.5, y, col, TEXT_ALIGN_CENTER )
@@ -240,7 +243,7 @@ local function DrawBanner( ply )
 	end
 
 	if state == ROUND_WARMUP then
-		CS16.DrawText( "WAITING FOR PLAYERS", "CS16.Heading", ScrW() * 0.5, y,
+		CS16.DrawText( CS16.Upper( CS16.L( "hud.waiting" ) ), "CS16.Heading", ScrW() * 0.5, y,
 			CS16.Colors.Muted, TEXT_ALIGN_CENTER )
 
 		--[[
@@ -253,7 +256,9 @@ local function DrawBanner( ply )
 		]]
 		local reason = CS16.GetRoundEndReason()
 
-		if reason and reason ~= "" and reason ~= "Waiting for players" then
+		local key = CS16.EndReasonKey()
+
+		if reason ~= "" and key ~= "round.waiting" then
 			CS16.DrawText( reason, "CS16.Small", ScrW() * 0.5, y + 24,
 				CS16.Colors.Gold, TEXT_ALIGN_CENTER )
 		end
@@ -266,8 +271,9 @@ local function DrawBanner( ply )
 	local defuser = CS16.GetDefuser()
 
 	if IsValid( defuser ) then
-		local label = ( defuser == ply ) and "DEFUSING"
-			or ( defuser:Nick() .. " IS DEFUSING" )
+		local label = CS16.Upper( ( defuser == ply )
+			and CS16.L( "hud.defusing" )
+			or CS16.L( "hud.defusing.other", { player = defuser:Nick() } ) )
 
 		CS16.DrawText( label, "CS16.Heading", ScrW() * 0.5, y,
 			CS16.Colors.CT, TEXT_ALIGN_CENTER )
@@ -277,7 +283,7 @@ local function DrawBanner( ply )
 	-- Dead players sit the round out, so tell them that rather than leaving
 	-- them wondering why they aren't respawning.
 	if not ply:Alive() and CS16.IsPlayingTeam( ply:Team() ) then
-		CS16.DrawText( "WAITING FOR NEXT ROUND", "CS16.Heading", ScrW() * 0.5, y,
+		CS16.DrawText( CS16.Upper( CS16.L( "hud.waitingnext" ) ), "CS16.Heading", ScrW() * 0.5, y,
 			CS16.Colors.Muted, TEXT_ALIGN_CENTER )
 	end
 end

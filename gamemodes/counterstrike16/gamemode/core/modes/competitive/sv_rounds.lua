@@ -101,9 +101,8 @@ local function AssignBomb()
 	-- The whole T side needs to know who has it.
 	for _, ply in ipairs( player.GetAll() ) do
 		if ply.CS16RoundTeam == TEAM_T then
-			ply:ChatPrint( ply == carrier
-				and "You have the bomb. Plant it at a bomb site."
-				or ( carrier:Nick() .. " has the bomb." ) )
+			CS16.Msg( ply, ply == carrier and "bomb.pickup.self" or "bomb.pickup.other",
+				{ player = carrier:Nick() } )
 		end
 	end
 end
@@ -166,7 +165,7 @@ end
 function CS16.StartWarmup()
 	SetState( ROUND_WARMUP, nil )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "Waiting for players" )
+	CS16.SetRoundEndReason( "round.waiting" )
 
 	ForEachPlayer( function( ply )
 		ply:Freeze( false )
@@ -177,7 +176,7 @@ end
 function CS16.StartRound()
 	SetGlobalInt( "CS16.Round", CS16.GetRoundNumber() + 1 )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "" )
+	CS16.SetRoundEndReason( nil )
 
 	-- Sweep away last round's bomb and anything dropped, before anyone spawns
 	-- on top of it. Otherwise guns pile up map-wide across a match.
@@ -238,9 +237,7 @@ function CS16.StartHalftime()
 		ply:Freeze( false )
 	end )
 
-	for _, ply in ipairs( player.GetAll() ) do
-		ply:ChatPrint( "[CS 1.6] Halftime - sides swapped." )
-	end
+	CS16.Msg( nil, "round.halftime" )
 
 	hook.Run( "CS16HalftimeStarted" )
 end
@@ -255,10 +252,10 @@ function CS16.StartLive()
 	PlaySound( "RoundStart" )
 end
 
-function CS16.EndRound( winner, reason )
+function CS16.EndRound( winner, reason, arg )
 	SetState( ROUND_END, CS16.Config.Round.EndTime )
 	SetGlobalInt( "CS16.Winner", winner or 0 )
-	SetGlobalString( "CS16.EndReason", reason or "" )
+	CS16.SetRoundEndReason( reason, arg )
 
 	-- Let people move again while the result is on screen.
 	ForEachPlayer( function( ply ) ply:Freeze( false ) end )
@@ -303,7 +300,7 @@ local function CheckRoundWinConditions()
 	-- Wiping the CTs wins it outright, bomb or no bomb. A planted bomb with
 	-- nobody left alive to defuse it is already a Terrorist win.
 	if ct > 0 and ctAlive == 0 then
-		CS16.EndRound( TEAM_T, "Counter-Terrorists eliminated" )
+		CS16.EndRound( TEAM_T, "round.end.ct.eliminated" )
 		return
 	end
 
@@ -312,7 +309,7 @@ local function CheckRoundWinConditions()
 		-- already down - the CTs still have to go and defuse it.
 		if CS16.IsBombPlanted() then return end
 
-		CS16.EndRound( TEAM_CT, "Terrorists eliminated" )
+		CS16.EndRound( TEAM_CT, "round.end.t.eliminated" )
 	end
 end
 
@@ -357,12 +354,12 @@ hook.Add( "Think", "CS16.RoundThink", function()
 					running out means the Counter-Terrorists failed.
 				]]
 				if CS16.IsHostageMap() then
-					CS16.EndRound( TEAM_T, "Hostages were not rescued" )
+					CS16.EndRound( TEAM_T, "round.end.hostages" )
 				else
-					CS16.EndRound( TEAM_CT, "Terrorists ran out of time" )
+					CS16.EndRound( TEAM_CT, "round.end.t.timeout" )
 				end
 			else
-				CS16.EndRound( nil, "Time expired" )
+				CS16.EndRound( nil, "round.end.timeexpired" )
 			end
 		end
 		return
@@ -405,7 +402,7 @@ CS16.AddCommand( "restartround", {
 	permission  = "round",
 	description = "Force a new round to start immediately.",
 	callback = function( ply )
-		ply:ChatPrint( "Restarting round." )
+		CS16.Msg( ply, "round.restarting" )
 		CS16.StartRound()
 	end,
 } )
@@ -431,6 +428,6 @@ CS16.AddCommand( "resetscore", {
 	description = "Reset the round score to 0 - 0.",
 	callback = function( ply )
 		CS16.ResetScores()
-		ply:ChatPrint( "Score reset." )
+		CS16.Msg( ply, "round.scorereset" )
 	end,
 } )

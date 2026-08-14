@@ -73,7 +73,7 @@ local function StopDefuse( bomb, reason )
 	RestoreSpeed( ply )
 	SendStatus( ply, false )
 
-	if reason then ply:ChatPrint( reason ) end
+	if reason then CS16.Msg( ply, reason ) end
 end
 
 CS16.StopDefuse = StopDefuse
@@ -122,12 +122,12 @@ local function BeginDefuse( bomb, ply )
 		-- there is no distance at which a defuse can look like it's working
 		-- and then fail.
 		if Range( ply, bomb ) > CS16.Config.Bomb.DefuseRange then
-			StopDefuse( bomb, "You moved away from the bomb." )
+			StopDefuse( bomb, "bomb.defuse.moved" )
 			return
 		end
 
 		if not ply:OnGround() then
-			StopDefuse( bomb, "You have to be on the ground to defuse." )
+			StopDefuse( bomb, "bomb.defuse.ground" )
 			return
 		end
 
@@ -177,7 +177,7 @@ hook.Add( "Initialize", "CS16.ReplaceDefuse", function()
 		if IsValid( self.m_pBombDefuser ) and self.m_pBombDefuser.m_bIsDefusing then return end
 
 		if Range( activator, self ) > CS16.Config.Bomb.DefuseRange then
-			activator:ChatPrint( "Get closer to the bomb to defuse it." )
+			CS16.Msg( activator, "bomb.defuse.closer" )
 			return
 		end
 

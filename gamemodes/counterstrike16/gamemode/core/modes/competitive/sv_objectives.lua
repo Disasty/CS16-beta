@@ -62,7 +62,7 @@ local function OnBombPlanted( ent )
 	local site = CS16.GetBombSiteAt( ent:GetPos() )
 	if not site then
 		if IsValid( planter ) then
-			planter:ChatPrint( "You can only plant at a bomb site." )
+			CS16.Msg( planter, "bomb.plant.notsite" )
 			RefundBomb( planter )
 		end
 
@@ -162,7 +162,7 @@ hook.Add( "InitPostEntity", "CS16.GatePlanting", function()
 			if SERVER and ( self.CS16NextWarn or 0 ) < CurTime() then
 				-- Throttled, or holding attack spams the chat.
 				self.CS16NextWarn = CurTime() + 2
-				owner:ChatPrint( "You are not at a bomb site." )
+				CS16.Msg( owner, "bomb.plant.away" )
 			end
 			return
 		end
@@ -201,7 +201,7 @@ hook.Add( "PlayerUse", "CS16.DefuseTeamCheck", function( ply, ent )
 		-- Throttled: holding E would otherwise flood the chat.
 		if ( ply.CS16NextDefuseWarn or 0 ) < CurTime() then
 			ply.CS16NextDefuseWarn = CurTime() + 3
-			ply:ChatPrint( "Only Counter-Terrorists can defuse the bomb." )
+			CS16.Msg( ply, "bomb.defuse.ctonly" )
 		end
 
 		return false
@@ -222,7 +222,7 @@ hook.Add( "PlayerUse", "CS16.DefuseTeamCheck", function( ply, ent )
 	if IsValid( current ) and current ~= ply and current.m_bIsDefusing then
 		if ( ply.CS16NextDefuseWarn or 0 ) < CurTime() then
 			ply.CS16NextDefuseWarn = CurTime() + 3
-			ply:ChatPrint( current:Nick() .. " is already defusing the bomb." )
+			CS16.Msg( ply, "bomb.defuse.busy", { player = current:Nick() } )
 		end
 
 		return false
@@ -247,7 +247,7 @@ timer.Create( "CS16.DefuseWatch", 0.25, 0, function()
 		-- Tell the rest of the team so nobody shoves them off it.
 		for _, ply in ipairs( player.GetAll() ) do
 			if ply:Team() == TEAM_CT and ply ~= defuser then
-				ply:ChatPrint( defuser:Nick() .. " is defusing the bomb - cover them." )
+				CS16.Msg( ply, "bomb.defuse.cover", { player = defuser:Nick() } )
 			end
 		end
 	elseif not active and IsValid( known ) then
@@ -274,7 +274,7 @@ hook.Add( "EntityRemoved", "CS16.BombResolved", function( ent )
 	if CS16.GetRoundState() ~= ROUND_LIVE then return end
 
 	if exploded then
-		CS16.EndRound( TEAM_T, "The bomb has detonated" )
+		CS16.EndRound( TEAM_T, "round.end.bomb.detonated" )
 		return
 	end
 
@@ -282,7 +282,7 @@ hook.Add( "EntityRemoved", "CS16.BombResolved", function( ent )
 		CS16.AddMoney( defuser, CS16.Config.Bomb.DefuseBonus )
 	end
 
-	CS16.EndRound( TEAM_CT, "The bomb has been defused" )
+	CS16.EndRound( TEAM_CT, "round.end.bomb.defused" )
 end )
 
 -- Nothing survives into the next round.

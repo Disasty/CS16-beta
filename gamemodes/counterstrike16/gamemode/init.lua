@@ -25,6 +25,9 @@ AddCSLuaFile( "shared.lua" )
 
 -- Shared, in the same order shared.lua includes them.
 AddCSLuaFile( "core/libraries/sh_config.lua" )
+AddCSLuaFile( "core/libraries/sh_language.lua" )
+AddCSLuaFile( "core/languages/en.lua" )
+AddCSLuaFile( "core/languages/pt.lua" )
 AddCSLuaFile( "core/libraries/sh_teams.lua" )
 AddCSLuaFile( "core/libraries/sh_phase.lua" )
 AddCSLuaFile( "core/libraries/sh_roundstate.lua" )
@@ -86,6 +89,7 @@ include( "core/libraries/sv_teams.lua" )
 include( "core/libraries/sv_spectate.lua" )
 include( "core/libraries/sv_phase.lua" )
 include( "core/libraries/sv_pause.lua" )
+include( "core/libraries/sv_language.lua" )
 
 -- Modules: services any mode can use.
 include( "core/modules/admin/sv_admin.lua" )

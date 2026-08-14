@@ -147,6 +147,6 @@ hook.Add( "CS16HostageRescued", "CS16.CountRescues", function( hostage, by )
 		from the receiving end.
 	]]
 	if total > 0 and rescued >= total and CS16.GetRoundState() == ROUND_LIVE then
-		CS16.EndRound( TEAM_CT, "All hostages rescued" )
+		CS16.EndRound( TEAM_CT, "round.end.hostages.rescued" )
 	end
 end )

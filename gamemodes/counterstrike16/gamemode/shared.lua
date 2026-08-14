@@ -18,6 +18,19 @@ CS16 = CS16 or {}
 CS16.Version = "0.1.0"
 
 include( "core/libraries/sh_config.lua" )
+
+--[[
+	Language, early, because everything after this point can look a string up
+	and nothing here depends on anything but the CS16 table.
+
+	English is loaded first and is the fallback every other language falls
+	through to, so a half-finished translation shows English rather than gaps.
+	Adding a language is a file in core/languages/ and a line here.
+]]
+include( "core/libraries/sh_language.lua" )
+include( "core/languages/en.lua" )
+include( "core/languages/pt.lua" )
+
 include( "core/libraries/sh_teams.lua" )
 include( "core/libraries/sh_phase.lua" )
 include( "core/libraries/sh_roundstate.lua" )

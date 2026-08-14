@@ -106,7 +106,7 @@ local function Win( ply )
 	SetState( ROUND_END, nil )
 
 	for _, other in ipairs( player.GetAll() ) do
-		other:ChatPrint( ("[CS 1.6] %s finished the ladder and wins the game."):format( ply:Nick() ) )
+		CS16.Msg( other, "gg.win", { player = ply:Nick() } )
 		other:Freeze( false )
 	end
 
@@ -165,7 +165,7 @@ local function Scored( ply )
 	]]
 	if level + 1 >= #LADDER then
 		for _, other in ipairs( player.GetAll() ) do
-			other:ChatPrint( ("[CS 1.6] %s is on the knife - one kill to win."):format( ply:Nick() ) )
+			CS16.Msg( other, "gg.knife", { player = ply:Nick() } )
 		end
 	end
 end
@@ -210,7 +210,7 @@ end )
 local function StartWarmup()
 	SetState( ROUND_WARMUP, nil )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "Waiting for players" )
+	CS16.SetRoundEndReason( "round.waiting" )
 
 	Playing( function( ply )
 		ply:Freeze( false )
@@ -221,7 +221,7 @@ end
 local function StartGame()
 	SetGlobalInt( "CS16.Round", 1 )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "" )
+	CS16.SetRoundEndReason( nil )
 
 	CS16.ClearDroppedWeapons()
 

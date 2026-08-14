@@ -15,6 +15,7 @@
 !/.gitignore
 !/.gitattributes
 !/README.md
+!/TRANSLATING.md
 !/LICENSE
 
 # The gamemode, and only the gamemode

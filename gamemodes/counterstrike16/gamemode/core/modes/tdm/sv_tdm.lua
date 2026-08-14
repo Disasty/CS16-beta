@@ -213,7 +213,7 @@ local function StartWarmup()
 	SetGlobalInt( "CS16.ScoreT", 0 )
 	SetGlobalInt( "CS16.ScoreCT", 0 )
 	SetGlobalInt( "CS16.Winner", 0 )
-	SetGlobalString( "CS16.EndReason", "Waiting for players" )
+	CS16.SetRoundEndReason( "round.waiting" )
 
 	Playing( function( ply )
 		ply:Freeze( false )
@@ -225,7 +225,7 @@ local function StartGame()
 	SetGlobalInt( "CS16.Round", 1 )
 	SetGlobalInt( "CS16.ScoreT", 0 )
 	SetGlobalInt( "CS16.ScoreCT", 0 )
-	SetGlobalString( "CS16.EndReason", "" )
+	CS16.SetRoundEndReason( nil )
 
 	SetState( ROUND_LIVE, cfg.TimeLimit > 0 and cfg.TimeLimit or nil )
 
@@ -258,7 +258,7 @@ local function EndGame( winner, reason )
 	SetGlobalBool( "CS16.MatchOver", true )
 	SetGlobalInt( "CS16.MatchWinner", winner or 0 )
 	SetGlobalInt( "CS16.Winner", winner or 0 )
-	SetGlobalString( "CS16.EndReason", reason or "" )
+	CS16.SetRoundEndReason( reason )
 
 	if winner == TEAM_T then
 		CS16.BroadcastSound( CS16.Config.Sounds.WinT )
@@ -270,7 +270,7 @@ local function EndGame( winner, reason )
 
 	for _, ply in ipairs( player.GetAll() ) do
 		ply:Freeze( false )
-		ply:ChatPrint( "[CS 1.6] " .. ( reason or "Game over." ) )
+		CS16.Msg( ply, reason or "tdm.end.over" )
 	end
 
 	--[[
@@ -314,12 +314,12 @@ hook.Add( "Think", "CS16.TDMThink", function()
 
 	if cfg.ScoreLimit > 0 then
 		if t >= cfg.ScoreLimit then
-			EndGame( TEAM_T, "Terrorists reached the score limit." )
+			EndGame( TEAM_T, "tdm.end.t.scorelimit" )
 			return
 		end
 
 		if ct >= cfg.ScoreLimit then
-			EndGame( TEAM_CT, "Counter-Terrorists reached the score limit." )
+			EndGame( TEAM_CT, "tdm.end.ct.scorelimit" )
 			return
 		end
 	end
@@ -327,11 +327,11 @@ hook.Add( "Think", "CS16.TDMThink", function()
 	-- The clock. Whoever is ahead takes it; level is a draw.
 	if cfg.TimeLimit > 0 and CurTime() >= CS16.GetPhaseEnd() then
 		if t > ct then
-			EndGame( TEAM_T, "Time up - Terrorists win." )
+			EndGame( TEAM_T, "tdm.end.t.time" )
 		elseif ct > t then
-			EndGame( TEAM_CT, "Time up - Counter-Terrorists win." )
+			EndGame( TEAM_CT, "tdm.end.ct.time" )
 		else
-			EndGame( nil, "Time up - the game is a draw." )
+			EndGame( nil, "tdm.end.draw" )
 		end
 	end
 end )

@@ -62,7 +62,7 @@ end
 	step back in.
 ]]
 function CS16.CanJoinTeam( ply, teamID )
-	if ply:Team() == teamID then return false, "You're already on that team." end
+	if ply:Team() == teamID then return false, "team.already" end
 
 	--[[
 		The developer team is checked here rather than trusted from the menu.
@@ -70,7 +70,7 @@ function CS16.CanJoinTeam( ply, teamID )
 		message and anyone can send one.
 	]]
 	if teamID == TEAM_DEV then
-		if not CS16.IsDeveloper( ply ) then return false, "That team is not for you." end
+		if not CS16.IsDeveloper( ply ) then return false, "team.notforyou" end
 		return true
 	end
 
@@ -92,11 +92,11 @@ function CS16.CanJoinTeam( ply, teamID )
 	local lock = CS16.GetTeamLock( ply )
 
 	if lock == "spectator" then
-		return false, "You left your team. You can rejoin when the map changes."
+		return false, "team.left"
 	end
 
 	if lock and lock ~= teamID then
-		return false, "You're locked to your team until the map changes."
+		return false, "team.locked"
 	end
 
 	--[[
@@ -105,7 +105,7 @@ function CS16.CanJoinTeam( ply, teamID )
 		having them.
 	]]
 	if CS16.TeamIsFull( teamID ) and not IsValid( BotOn( teamID ) ) then
-		return false, "That team is full."
+		return false, "team.full"
 	end
 
 	return true
@@ -121,7 +121,7 @@ function CS16.JoinTeam( ply, teamID )
 	local allowed, reason = CS16.CanJoinTeam( ply, teamID )
 
 	if not allowed then
-		if reason then ply:ChatPrint( reason ) end
+		if reason then CS16.Msg( ply, reason ) end
 		return false
 	end
 

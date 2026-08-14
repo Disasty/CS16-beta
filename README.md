@@ -27,6 +27,7 @@ rather than `sandbox` — this is a shooter, not a sandbox map with guns in it.
 - **Flashlight** on `F` — Half-Life 1's, which lights the surface you're looking at rather than throwing a cone from your eye
 - **Kill feed** — the original 1.6 death sprites, with headshot markers
 - **HUD, scoreboard, team and buy menus** — one cohesive 1.6 look, drawn from the original HUD sprites
+- **Languages** — English and Portuguese, picked from your Garry's Mod language automatically ([below](#languages))
 - **Admin** — two ranks, chat commands, ranks persisted to disk
 - **Developer tools** — a team you can walk a live match in, plus noclip, third person, phase, and a C menu for authoring map data ([below](#developer-tools))
 - **Survivor carryover** — live through a round and you keep your kit, as you should
@@ -233,6 +234,7 @@ Chat commands accept `/` or `!`. `/help` lists what you personally can run.
 |---|---|---|
 | `/help` | everyone | List available commands |
 | `/xp` | everyone | Your level, experience, and how far the next one is |
+| `/language [code]` | everyone | Read the gamemode in another language, or `auto` to follow your game |
 | `/kick`, `/ban`, `/mute`, `/unmute` | Administrator | Moderation |
 | `/bots <n>`, `/addbot [t\|ct]`, `/removebot`, `/kickbots` | Administrator | Bot management |
 | `/autofill <on\|off>` | Administrator | Automatic match filling |
@@ -240,6 +242,7 @@ Chat commands accept `/` or `!`. `/help` lists what you personally can run.
 | `/restartround`, `/resetscore`, `/roundinfo` | Developer | Round control |
 | `/setscore <t> <ct>`, `/halftime` | Developer | Match testing |
 | `/botdebug` | Developer | Bot navigation diagnostics |
+| `/langcheck <code>` | Developer | Check a translation against English for gaps and broken placeholders |
 | `/setlevel <n>` | Developer | Jump to a gungame rung (gungame only) |
 | `/hostagespot`, `/rescuezone`, `/zones` | Developer | Place map objectives the map itself lacks |
 | `/brspawn`, `/brloot` | Developer | Place battle royale spawns and weapon drops. Both take `undo`, `clear`, or `remove <id>` |
@@ -381,6 +384,7 @@ gamemode/
   shared.lua      shared entry point
 
   core/
+    languages/    one file per language, and the only file a translator edits
     libraries/    the framework: config, teams, commands, player lifecycle,
                   spawns, movement, voice, spectating, developer phase, and
                   the round-state vocabulary every mode speaks
@@ -624,6 +628,50 @@ chat command and refuses to run for a player at any rank, because there is no
 undo and no rank that should have it from inside the game. It clears everyone
 currently connected as well as the table; otherwise the next round would write
 all the old totals straight back.
+
+## Languages
+
+The gamemode ships in English and Portuguese, and picks one from the player's
+own Garry's Mod language with no setting to configure. Two people on the same
+server read the same round in different languages.
+
+| File | Serves |
+|---|---|
+| `core/languages/en.lua` | English, and the fallback for everything |
+| `core/languages/pt.lua` | Portuguese, both `pt-br` and `pt-pt` |
+
+To read the game in a language your client is not set to:
+
+```
+/language pt
+/language auto
+```
+
+### How it works
+
+Text is looked up by key rather than written inline, so a translator edits one
+file and never touches game logic. Placeholders are named, `{player}` rather
+than `%s`, which lets a translator move a value to wherever the sentence needs
+it and makes a type mismatch impossible.
+
+A language file may be incomplete. Anything a translation is missing falls
+through to English, which is what makes a half-finished file safe to ship.
+Regional codes fall back to their base first, so `pt-br` and `pt-pt` are both
+answered by `pt.lua`, and a `pt-br.lua` carrying only the lines Brazil says
+differently would be consulted ahead of it.
+
+Developer tooling is deliberately **not** translated. The dev menu, zone
+authoring, `/brcheck` and the bot diagnostics stay English: only developers
+read them, and excluding them cuts a translator's work by about a third.
+
+### Contributing one
+
+See [TRANSLATING.md](TRANSLATING.md). Short version: copy `en.lua`, translate
+the values, add two lines to the entry points, and run `/langcheck <code>` to
+catch anything missing or any placeholder that got lost on the way.
+
+The Portuguese is a first pass and is marked as such in the file, with the
+handful of terminology calls flagged for a native speaker to settle.
 
 ## Configuration
 
