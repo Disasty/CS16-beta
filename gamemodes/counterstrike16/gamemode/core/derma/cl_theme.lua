@@ -45,6 +45,74 @@ surface.CreateFont( "CS16.HUDNumber", {
 	font = "Verdana Bold", size = 34, weight = 900,
 } )
 
+--[[
+	The join menus size themselves to the screen, so their text has to as well.
+
+	A font cannot be resized after it is made, so these are cut once from the
+	screen height at the proportions 1.6 uses: the title about a thirtieth of
+	the screen, the numbered items about a sixtieth. On 1080p that lands on the
+	34 and 17 pixels the original draws.
+]]
+surface.CreateFont( "CS16.MenuTitle", {
+	font = "Verdana Bold", size = math.max( 20, ScrH() / 31 ), weight = 800,
+} )
+
+surface.CreateFont( "CS16.MenuItem", {
+	font = "Verdana Bold", size = math.max( 12, ScrH() / 63 ), weight = 800,
+} )
+
+surface.CreateFont( "CS16.MenuBody", {
+	font = "Verdana Bold", size = math.max( 11, ScrH() / 68 ), weight = 500,
+} )
+
+--[[
+	Smaller again, for the labels under the model grid.
+
+	Six cells across leaves each about 167 pixels wide at 1080p, and
+	"PHOENIX CONNEXION" in the item font is wider than that. It overhung its
+	cell and ran into the next one.
+]]
+surface.CreateFont( "CS16.MenuLabel", {
+	font = "Verdana Bold", size = math.max( 10, ScrH() / 78 ), weight = 800,
+} )
+
+--[[
+	Break a paragraph into lines that fit a width, returning them.
+
+	Word wrapping rather than character wrapping, and it returns rather than
+	draws, so the caller decides the line spacing and the colour. Needed because
+	a translated paragraph is a different length from the English one and no
+	amount of hand-placed line breaks survives that: Portuguese runs a fifth
+	longer than English and would spill straight out of the panel.
+
+	A single word longer than the whole width is left to overflow rather than
+	cut in half, on the grounds that no real sentence contains one and a
+	half-word is worse than a wide line.
+]]
+function CS16.WrapText( text, font, maxWidth )
+	local lines = {}
+	if not isstring( text ) or text == "" then return lines end
+
+	surface.SetFont( font )
+
+	local line = ""
+
+	for word in text:gmatch( "%S+" ) do
+		local try = ( line == "" ) and word or ( line .. " " .. word )
+
+		if surface.GetTextSize( try ) <= maxWidth or line == "" then
+			line = try
+		else
+			lines[ #lines + 1 ] = line
+			line = word
+		end
+	end
+
+	if line ~= "" then lines[ #lines + 1 ] = line end
+
+	return lines
+end
+
 -- The standard framed box every CS16 panel sits in.
 function CS16.DrawPanel( x, y, w, h )
 	surface.SetDrawColor( CS16.Colors.Panel )

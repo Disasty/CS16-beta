@@ -373,6 +373,7 @@ end
 
 net.Receive( "CS16.JoinTeam", function( len, ply )
 	local choice = net.ReadUInt( 3 )
+	local class  = net.ReadUInt( 4 )
 
 	local wanted
 	if choice == 1 then wanted = TEAM_T
@@ -392,7 +393,42 @@ net.Receive( "CS16.JoinTeam", function( len, ply )
 	local solo = CS16.SoloTeam()
 	if solo and ( wanted == TEAM_T or wanted == TEAM_CT ) then wanted = solo end
 
-	if wanted == ply:Team() then return end
+	--[[
+		The class, checked against the side actually being joined rather than
+		against the one the menu thought it was offering.
+
+		This is a net message, so the index is whatever somebody chose to send.
+		Looking it up in the side's own class list is what stops a Terrorist
+		asking for a GIGN uniform: an index that is not on that side's list
+		simply is not found, and the random roll the loadout would have made
+		stands instead.
+
+		Zero is Auto Select and means exactly that, so it never gets this far.
+	]]
+	if class > 0 then
+		local entry = CS16.ClassesForTeam( wanted )[ class ]
+
+		if entry then
+			ply.CS16Model     = entry.model
+			ply.CS16ModelTeam = wanted
+		end
+	end
+
+	if wanted == ply:Team() then
+		--[[
+			Already on this side, so this is a change of clothes rather than a
+			way in. Applied at once outside a live round, and left for the next
+			spawn during one, because swapping model mid-fight moves the
+			hitboxes of somebody being shot at.
+		]]
+		if class > 0 and ply.CS16Model and ply:Alive()
+			and CS16.GetRoundState() ~= ROUND_LIVE then
+			ply:SetModel( ply.CS16Model )
+			ply:SetupHands()
+		end
+
+		return
+	end
 
 	-- JoinTeam owns the rules and reports its own refusals.
 	CS16.JoinTeam( ply, wanted )

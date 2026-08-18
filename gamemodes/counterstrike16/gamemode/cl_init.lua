@@ -14,6 +14,7 @@ include( "core/derma/cl_hud.lua" )
 
 -- Before the team menu, which asks it whether to hold off on opening.
 include( "core/derma/cl_motd.lua" )
+include( "core/derma/cl_menuframe.lua" )
 include( "core/derma/cl_teammenu.lua" )
 
 -- After it, because the two are one choice between them: the team menu routes

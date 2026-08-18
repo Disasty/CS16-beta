@@ -136,6 +136,63 @@ CS16.RegisterLanguage( "en", "English", {
 ["scoreboard.kit"]              = "D. Kit",
 ["scoreboard.info"]             = "{map}   {players}/{max} players",
 
+--[[ Join menus -----------------------------------------------------------]]
+
+["menu.team.title"]         = "Select Team",
+["menu.class.title"]        = "Choose a Class",
+
+["menu.team.t"]             = "Terrorist Forces",
+["menu.team.ct"]            = "CT Forces",
+["menu.team.auto"]          = "Auto Assign",
+["menu.team.spectate"]      = "Spectate",
+["menu.team.developer"]     = "Developer",
+["menu.autoselect"]         = "Auto-Select",
+
+["menu.brief.map"]          = "Map: {map}",
+["menu.brief.mode"]         = "Mode: {mode}",
+
+["menu.brief.defusal.ct"]   = "Counter-Terrorists: stop the bomb being planted, or defuse it if it already is. Eliminating the Terrorists wins the round as well.",
+["menu.brief.defusal.t"]    = "Terrorists: plant the bomb at one of the sites and hold it until it detonates. Eliminating the Counter-Terrorists wins the round as well.",
+["menu.brief.rescue.ct"]    = "Counter-Terrorists: find the hostages and walk them to a rescue zone. Eliminating the Terrorists wins the round as well.",
+["menu.brief.rescue.t"]     = "Terrorists: keep the hostages where they are and stop the rescue. Eliminating the Counter-Terrorists wins the round as well.",
+
+--[[ Classes --------------------------------------------------------------
+
+	Written for this project rather than taken from the original, which is
+	Valve's text. Factual where they name a real unit, and short enough to sit
+	under the model without pushing it off the panel.
+]]
+
+["class.phoenix.name"]      = "Phoenix Connexion",
+["class.phoenix.desc"]      = "Eastern European, and feared well past it. Formed in the confusion that followed the Soviet collapse, they took the view early on that anyone standing between them and the job was part of the job.",
+
+["class.leet.name"]         = "Elite Crew",
+["class.leet.desc"]         = "Wealthy, careful, and professional in a way the rest of this list is not. They buy the best of everything and hire people who already know how to use it.",
+
+["class.arctic.name"]       = "Arctic Avengers",
+["class.arctic.desc"]       = "Scandinavian, and at home in weather that stops everyone else. What started as smuggling across the northern borders now takes contracts anywhere cold enough to suit them.",
+
+["class.guerrilla.name"]    = "Guerrilla Warfare",
+["class.guerrilla.desc"]    = "Central American and long-lived. Thirty years in the jungle taught them patience, and the habit of fighting on ground they chose rather than ground they were handed.",
+
+["class.seal.name"]         = "Seal Team 6",
+["class.seal.desc"]         = "The United States Navy's counter-terrorism unit, stood up in 1980 and on permanent alert since. If Americans are taken anywhere in the world, these are the people sent for them.",
+
+["class.gsg9.name"]         = "GSG-9",
+["class.gsg9.desc"]         = "Germany's federal counter-terrorism group, raised after the Munich massacre of 1972 and built so that it would not happen twice. Methodical, heavily trained, and rarely in a hurry.",
+
+["class.sas.name"]          = "SAS",
+["class.sas.desc"]          = "Britain's Special Air Service, and the model most of the others copied. Their reputation was made on an embassy balcony in London in 1980, and quietly added to ever since.",
+
+["class.gign.name"]         = "GIGN",
+["class.gign.desc"]         = "France's gendarmerie intervention group, small by design and selected hard. Best known for ending the hijacking of an Air France flight at Marseille in 1994.",
+
+["class.vip.name"]          = "VIP",
+["class.vip.desc"]          = "The one everybody else is being paid to worry about.",
+
+["class.hostage.name"]      = "Hostage",
+["class.hostage.desc"]      = "Not strictly a combatant. Nobody will be expecting you.",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Language: {name} ({code})",

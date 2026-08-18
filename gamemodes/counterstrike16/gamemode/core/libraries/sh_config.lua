@@ -31,20 +31,24 @@ cfg.Models = {
 	sides has nothing to dress for and it is funnier.
 
 	Ordered Terrorists, Counter-Terrorists, then the odd two, so the picker
-	reads the way the 1.6 model list did. Named as the game named them rather
-	than by filename - nobody picked "guerilla.mdl".
+	reads the way the 1.6 model list did.
+
+	`key` is what the language files look the name and description up by, and is
+	the reason the English name is still here: it is the fallback when a
+	translation has not reached this class yet, and it keeps the list readable
+	to anyone editing it. Nobody picked "guerilla.mdl".
 ]]
 cfg.PickableModels = {
-	{ name = "Phoenix Connexion", model = "models/cs/playermodels/terror.mdl"   },
-	{ name = "Elite Crew",        model = "models/cs/playermodels/leet.mdl"     },
-	{ name = "Arctic Avengers",   model = "models/cs/playermodels/arctic.mdl"   },
-	{ name = "Guerrilla Warfare", model = "models/cs/playermodels/guerilla.mdl" },
-	{ name = "Seal Team 6",       model = "models/cs/playermodels/urban.mdl"    },
-	{ name = "GSG-9",             model = "models/cs/playermodels/gsg9.mdl"     },
-	{ name = "SAS",               model = "models/cs/playermodels/sas.mdl"      },
-	{ name = "GIGN",              model = "models/cs/playermodels/gign.mdl"     },
-	{ name = "VIP",               model = "models/cs/playermodels/vip.mdl"      },
-	{ name = "Hostage",           model = "models/cs/playermodels/hostage.mdl"  },
+	{ key = "phoenix",   name = "Phoenix Connexion", model = "models/cs/playermodels/terror.mdl"   },
+	{ key = "leet",      name = "Elite Crew",        model = "models/cs/playermodels/leet.mdl"     },
+	{ key = "arctic",    name = "Arctic Avengers",   model = "models/cs/playermodels/arctic.mdl"   },
+	{ key = "guerrilla", name = "Guerrilla Warfare", model = "models/cs/playermodels/guerilla.mdl" },
+	{ key = "seal",      name = "Seal Team 6",       model = "models/cs/playermodels/urban.mdl"    },
+	{ key = "gsg9",      name = "GSG-9",             model = "models/cs/playermodels/gsg9.mdl"     },
+	{ key = "sas",       name = "SAS",               model = "models/cs/playermodels/sas.mdl"      },
+	{ key = "gign",      name = "GIGN",              model = "models/cs/playermodels/gign.mdl"     },
+	{ key = "vip",       name = "VIP",               model = "models/cs/playermodels/vip.mdl"      },
+	{ key = "hostage",   name = "Hostage",           model = "models/cs/playermodels/hostage.mdl"  },
 }
 
 --[[

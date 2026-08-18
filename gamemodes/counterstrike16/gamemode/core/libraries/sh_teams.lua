@@ -113,6 +113,38 @@ function CS16.HasBody( t )
 	return CS16.IsPlayingTeam( t ) or t == TEAM_DEV
 end
 
+--[[
+	The four classes a side can be, in 1.6's order.
+
+	Derived from the two lists rather than written a third time: a class belongs
+	to a side if that side's model roster contains its model. Config.PickableModels
+	already happens to list them in the order 1.6 does, Phoenix through Guerrilla
+	and Seal Team 6 through GIGN, so filtering it keeps that order for free.
+
+	VIP and the hostage are in PickableModels and in neither roster, which is
+	exactly right: they are things to look like in battle royale, not sides to
+	join in a match.
+
+	Shared because both ends need it. The menu draws from it and the server
+	checks against it, so a class index arriving over the wire cannot put a
+	GIGN uniform on a Terrorist.
+]]
+function CS16.ClassesForTeam( teamID )
+	local code   = CS16.TeamCode( teamID )
+	local roster = code and CS16.Config.Models[ code ]
+	if not roster then return {} end
+
+	local lookup = {}
+	for _, model in ipairs( roster ) do lookup[ model ] = true end
+
+	local out = {}
+	for _, entry in ipairs( CS16.Config.PickableModels ) do
+		if lookup[ entry.model ] then out[ #out + 1 ] = entry end
+	end
+
+	return out
+end
+
 -- Short code used to index Config.Models / Config.Loadout.
 function CS16.TeamCode( t )
 	if t == TEAM_T then return "T" end

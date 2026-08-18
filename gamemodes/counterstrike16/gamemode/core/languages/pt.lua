@@ -165,6 +165,63 @@ CS16.RegisterLanguage( "pt", "Português", {
 ["scoreboard.kit"]              = "Kit",
 ["scoreboard.info"]             = "{map}   {players}/{max} jogadores",
 
+--[[ Join menus -----------------------------------------------------------]]
+
+["menu.team.title"]         = "Escolha o time",
+["menu.class.title"]        = "Escolha uma classe",
+
+["menu.team.t"]             = "Forças Terroristas",
+["menu.team.ct"]            = "Forças CT",
+["menu.team.auto"]          = "Entrar automaticamente",
+["menu.team.spectate"]      = "Assistir",
+["menu.team.developer"]     = "Desenvolvedor",
+["menu.autoselect"]         = "Seleção automática",
+
+["menu.brief.map"]          = "Mapa: {map}",
+["menu.brief.mode"]         = "Modo: {mode}",
+
+["menu.brief.defusal.ct"]   = "Contra-Terroristas: impeçam que a bomba seja plantada, ou desarmem-na se já estiver. Eliminar os Terroristas também vence a rodada.",
+["menu.brief.defusal.t"]    = "Terroristas: plantem a bomba em um dos locais e defendam-na até explodir. Eliminar os Contra-Terroristas também vence a rodada.",
+["menu.brief.rescue.ct"]    = "Contra-Terroristas: encontrem os reféns e levem-nos até uma zona de resgate. Eliminar os Terroristas também vence a rodada.",
+["menu.brief.rescue.t"]     = "Terroristas: mantenham os reféns onde estão e impeçam o resgate. Eliminar os Contra-Terroristas também vence a rodada.",
+
+--[[ Classes --------------------------------------------------------------
+
+	Os nomes das facções são nomes próprios e o jogo original os mantém em
+	inglês. Traduza apenas as descrições, a menos que tenha certeza de que um
+	nome tem forma consagrada em português.
+]]
+
+["class.phoenix.name"]      = "Phoenix Connexion",
+["class.phoenix.desc"]      = "Do Leste Europeu, e temidos bem além dele. Formados na confusão que se seguiu ao colapso soviético, cedo adotaram a ideia de que quem estivesse entre eles e o trabalho fazia parte do trabalho.",
+
+["class.leet.name"]         = "Elite Crew",
+["class.leet.desc"]         = "Ricos, cuidadosos e profissionais de um jeito que o resto desta lista não é. Compram o melhor de tudo e contratam quem já sabe usá-lo.",
+
+["class.arctic.name"]       = "Arctic Avengers",
+["class.arctic.desc"]       = "Escandinavos, à vontade num clima que para todo mundo. O que começou como contrabando pelas fronteiras do norte hoje aceita contratos em qualquer lugar frio o bastante para eles.",
+
+["class.guerrilla.name"]    = "Guerrilla Warfare",
+["class.guerrilla.desc"]    = "Centro-americanos e de vida longa. Trinta anos de selva lhes ensinaram paciência, e o hábito de lutar no terreno que escolhem em vez do terreno que lhes dão.",
+
+["class.seal.name"]         = "Seal Team 6",
+["class.seal.desc"]         = "A unidade antiterrorista da Marinha dos Estados Unidos, criada em 1980 e em alerta permanente desde então. Se americanos são feitos reféns em qualquer lugar do mundo, são eles que vão buscá-los.",
+
+["class.gsg9.name"]         = "GSG-9",
+["class.gsg9.desc"]         = "O grupo antiterrorista federal alemão, criado após o massacre de Munique em 1972 e construído para que aquilo não se repetisse. Metódicos, muito bem treinados e raramente com pressa.",
+
+["class.sas.name"]          = "SAS",
+["class.sas.desc"]          = "O Special Air Service britânico, o modelo que quase todos os outros copiaram. A reputação foi feita na sacada de uma embaixada em Londres, em 1980, e vem sendo ampliada em silêncio desde então.",
+
+["class.gign.name"]         = "GIGN",
+["class.gign.desc"]         = "O grupo de intervenção da gendarmaria francesa, pequeno por opção e selecionado com dureza. Conhecido por encerrar o sequestro de um voo da Air France em Marselha, em 1994.",
+
+["class.vip.name"]          = "VIP",
+["class.vip.desc"]          = "Aquele com quem todos os outros estão sendo pagos para se preocupar.",
+
+["class.hostage.name"]      = "Refém",
+["class.hostage.desc"]      = "Não exatamente um combatente. Ninguém vai estar esperando por você.",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Idioma: {name} ({code})",
