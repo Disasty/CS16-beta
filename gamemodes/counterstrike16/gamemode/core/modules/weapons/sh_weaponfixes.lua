@@ -79,6 +79,53 @@ if CLIENT then
 end
 
 --[[
+	--- The viewmodel bobbing twice ---
+
+	The pack computes a 1.6-style bob from your speed and then applies it in two
+	places. CalcView raises the eye by it, which is correct and is what gives
+	the walk its bounce. CalcViewModelView then adds it to the viewmodel as
+	well:
+
+	    oldPos = oldPos + ( ... * bob * 0.4 ) - Vector( 0, 0, 1 - bob )
+
+	That last term is a fixed one-unit drop with a second full helping of bob
+	riding on it. The viewmodel position it is added to already followed the
+	eye, so the gun ends up moving by the bob relative to a camera that has
+	already moved by the same amount, and what you see is a weapon swinging
+	through twice the arc the view does.
+
+	At the 250 units a second this gamemode runs at, the bob spans -1.0 to
+	+2.5. Three and a half units of it, doubled, is the sway.
+
+	Only the doubled term goes. The directional part stays, because that is the
+	small forward push that makes a walk feel like a walk, and the one-unit drop
+	stays because it is where the gun is meant to sit. The eye keeps bobbing at
+	full strength: that half was never wrong.
+
+	Wrapped rather than rewritten, so whatever else the pack does in there
+	still happens and an update to it is not silently reverted. A nil return
+	means the player has turned classic bob off in the pack's own settings menu,
+	and then there is nothing of ours to correct.
+]]
+if CLIENT then
+	hook.Add( "Initialize", "CS16.FixViewModelBob", function()
+		local base = weapons.GetStored( "weapon_cs_base" )
+		if not base or not base.CalcViewModelView then return end
+
+		local original = base.CalcViewModelView
+
+		function base:CalcViewModelView( vm, oldPos, oldAng, pos, ang )
+			local newPos, newAng = original( self, vm, oldPos, oldAng, pos, ang )
+			if not newPos then return newPos, newAng end
+
+			newPos.z = newPos.z - self:CalcBob()
+
+			return newPos, newAng
+		end
+	end )
+end
+
+--[[
 	IsStandable, which the planted bomb calls and nothing defines.
 
 	The addon's planted C4 carries a hand-port of the engine's
