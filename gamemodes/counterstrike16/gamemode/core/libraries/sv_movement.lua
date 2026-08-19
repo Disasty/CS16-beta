@@ -22,10 +22,22 @@ function CS16.ApplySpeed( ply )
 	--[[
 		Respawning resets the engine's own speed values back to GMod defaults
 		(400 run / 250 walk), which quietly re-enables sprint. Checking the
-		live walk speed as well as our cache makes this self-healing rather
-		than depending on somebody remembering to clear the cache on spawn.
+		live values as well as our cache makes this self-healing rather than
+		depending on somebody remembering to clear the cache on spawn.
+
+		The crouch fraction is checked too, and separately. Our base speed is
+		the same 250 Garry's Mod resets walk speed to, so on respawn the walk
+		test alone passes, the whole function returns early, and the crouch
+		fraction is left sitting at the default it was just reset to.
 	]]
-	if ply.CS16LastSpeed == speed and ply:GetWalkSpeed() == speed then return end
+	local crouch = CS16.Config.CrouchSpeedMultiplier
+
+	if ply.CS16LastSpeed == speed
+		and ply:GetWalkSpeed() == speed
+		and math.abs( ply:GetCrouchedWalkSpeed() - crouch ) < 0.001 then
+		return
+	end
+
 	ply.CS16LastSpeed = speed
 
 	ply:SetWalkSpeed( speed )
@@ -34,6 +46,35 @@ function CS16.ApplySpeed( ply )
 	-- point "run" at the slower value and let the normal speed be full pace.
 	ply:SetRunSpeed( speed * CS16.Config.WalkSpeedMultiplier )
 	ply:SetSlowWalkSpeed( speed * CS16.Config.WalkSpeedMultiplier )
+
+	-- A fraction of walk speed, not an absolute, so it tracks whatever the
+	-- weapon in hand allows: an AWP is slow crouched and slower still scoped.
+	ply:SetCrouchedWalkSpeed( crouch )
+end
+
+--[[
+	Fall damage on Half-Life's curve, which 1.6 inherited.
+
+	Garry's Mod answers a flat 10 regardless of how far you fell, so a rooftop
+	and a kerb cost the same and there was no reason not to take the drop.
+
+	Straight line between the two speeds in config: nothing below SafeSpeed,
+	a full hundred at FatalSpeed, and past that it keeps climbing rather than
+	capping, so a truly enormous fall kills through armour the way it should.
+
+	The engine hands us the landing speed rather than the height, which is the
+	useful end of it - it already accounts for gravity, and for anything that
+	slowed the fall on the way down.
+]]
+function GM:GetFallDamage( ply, speed )
+	local fall = CS16.Config.Fall
+
+	if speed <= fall.SafeSpeed then return 0 end
+
+	local span = fall.FatalSpeed - fall.SafeSpeed
+	if span <= 0 then return 0 end
+
+	return ( speed - fall.SafeSpeed ) * ( 100 / span )
 end
 
 --[[

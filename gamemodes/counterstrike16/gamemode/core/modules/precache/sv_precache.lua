@@ -99,12 +99,24 @@ hook.Add( "Initialize", "CS16.Precache", function()
 	]]
 	local sounds = 0
 
-	for _, path in pairs( CS16.Config.Sounds or {} ) do
-		if isstring( path ) then
-			util.PrecacheSound( path )
-			sounds = sounds + 1
+	--[[
+		Config.Sounds is a flat table of cues; the hostage's voice lines are
+		lists of alternatives sitting inside Config.Hostage. Both are walked,
+		because a hostage's first "let's go" stuttering is exactly the case the
+		note above is about.
+	]]
+	local function PrecacheSounds( from )
+		for _, path in pairs( from or {} ) do
+			if isstring( path ) then
+				util.PrecacheSound( path )
+				sounds = sounds + 1
+			end
 		end
 	end
+
+	PrecacheSounds( CS16.Config.Sounds )
+	PrecacheSounds( CS16.Config.Hostage.FollowSounds )
+	PrecacheSounds( CS16.Config.Hostage.StaySounds )
 
 	if sounds > 0 then MsgN( ("[CS 1.6] Precached %d sound(s)."):format( sounds ) ) end
 end )

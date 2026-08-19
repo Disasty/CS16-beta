@@ -46,6 +46,33 @@ hook.Add( "Initialize", "CS16.FixHoldTypes", function()
 end )
 
 --[[
+	--- The grenades having no order ---
+
+	All four declare SlotPos = 1. The weapon selection menu sorts a slot by
+	that number, so with every grenade claiming the same position their order
+	is whatever order they happen to sit in your inventory - which is the order
+	you bought them in, and changes as you throw and rebuy. Carrying all three
+	made the menu reshuffle itself between rounds.
+
+	1.6's slot four is fixed: HE grenade, flashbang, smoke. Numbering them says
+	so. The molotov is not a 1.6 weapon and goes last, where it cannot displace
+	any of the three that are.
+]]
+local SLOT_POSITIONS = {
+	weapon_cs16_hegrenade    = 0,
+	weapon_cs16_flashbang    = 1,
+	weapon_cs16_smokegrenade = 2,
+	weapon_cs16_molotov      = 3,
+}
+
+hook.Add( "Initialize", "CS16.FixGrenadeOrder", function()
+	for class, pos in pairs( SLOT_POSITIONS ) do
+		local stored = weapons.GetStored( class )
+		if stored then stored.SlotPos = pos end
+	end
+end )
+
+--[[
 	--- Muzzle flashes outliving their weapon ---
 
 	The pack's muzzle flash is an effect, sent with fx:SetEntity( self ). Effect

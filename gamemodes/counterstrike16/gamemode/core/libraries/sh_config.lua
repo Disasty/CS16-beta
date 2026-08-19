@@ -118,6 +118,34 @@ cfg.BaseSpeed = 250
 -- Holding +speed walks quietly instead of sprinting, which is how CS behaves.
 cfg.WalkSpeedMultiplier = 0.52
 
+--[[
+	Ducking, as a fraction of full pace.
+
+	Garry's Mod ships 0.6, which put a crouching player at 150 against the 130
+	of somebody walking quietly - so crouching was the faster way to move
+	carefully, which is exactly backwards. 1.6 ducks at about a third, landing
+	here on 85, comfortably the slowest way to travel.
+]]
+cfg.CrouchSpeedMultiplier = 0.34
+
+--[[
+	Falling, in the units per second you land at rather than the height you
+	fell from, because that is what the engine reports.
+
+	Half-Life's numbers, which 1.6 inherited: nothing under SafeSpeed hurts at
+	all, FatalSpeed kills outright from full health, and everything between is a
+	straight line. At the 600 gravity this runs at that makes a drop of about
+	280 units free, and one of about 875 lethal - roughly four player heights
+	and twelve.
+
+	Garry's Mod's own answer is a flat 10 whatever you fell off, which is why a
+	rooftop cost the same as a kerb.
+]]
+cfg.Fall = {
+	SafeSpeed  = 580,
+	FatalSpeed = 1024,
+}
+
 cfg.JumpPower = 220
 
 -- Weapons that exist in the addon but we don't want in play. The shield's
@@ -621,6 +649,31 @@ cfg.Hostage = {
 	-- Close enough not to trail down a corridor, far enough not to stand in
 	-- your line of fire.
 	FollowDistance = 90,
+
+	--[[
+		What a hostage says when you take it, picked at random the way 1.6
+		varies its lines.
+
+		These are the originals, and they come from the sound pack rather than
+		from this gamemode - the same place the radio and round cues come from,
+		so nothing here is ours to ship and the Credits section stays true.
+		Note the path: they sit under counterstrike16/hostages/ rather than at
+		1.6's own sound/hostage/, which is empty on this install.
+
+		There is deliberately no sound for leaving one behind. Nothing in the
+		pack fits a hostage being told to wait, and the wrong voice saying the
+		wrong thing is worse than a hostage that simply stops walking. The chat
+		line already says what happened.
+	]]
+	FollowSounds = {
+		"counterstrike16/hostages/hos1.wav",
+		"counterstrike16/hostages/hos2.wav",
+		"counterstrike16/hostages/hos3.wav",
+		"counterstrike16/hostages/hos4.wav",
+		"counterstrike16/hostages/hos5.wav",
+	},
+
+	StaySounds = {},
 }
 
 --[[

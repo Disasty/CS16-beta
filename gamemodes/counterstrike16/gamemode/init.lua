@@ -117,6 +117,7 @@ include( "core/modules/economy/sv_economy.lua" )
 include( "core/modules/progression/sv_progression.lua" )
 include( "core/modules/weapons/sv_buy.lua" )
 include( "core/modules/weapons/sv_drop.lua" )
+include( "core/modules/weapons/sv_pickup.lua" )
 
 -- The developer phaser. Ships with the gamemode rather than as an addon, so
 -- there is nothing else to install; the weapon is entities/weapons and its

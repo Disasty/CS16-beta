@@ -124,18 +124,36 @@ end
 	guarding it, not moving it - and two Counter-Terrorists sharing one would
 	just make it oscillate between them.
 ]]
+--[[
+	A line out loud, picked at random the way 1.6 varies them.
+
+	On CHAN_VOICE so a hostage can only be saying one thing at a time: without
+	that, holding use against one stacks a chorus of them over each other.
+	Level 75 is ordinary speech, audible across a room and not down a corridor,
+	which is what makes taking a hostage something a nearby Terrorist can hear.
+]]
+function ENT:Speak( sounds )
+	if not sounds or #sounds == 0 then return end
+
+	self:EmitSound( sounds[ math.random( #sounds ) ], 75, 100, 1, CHAN_VOICE )
+end
+
 function ENT:Use( activator )
 	if not IsValid( activator ) or not activator:IsPlayer() then return end
 	if activator:Team() ~= TEAM_CT or not activator:Alive() then return end
 	if self:GetRescued() then return end
 
+	local cfg = CS16.Config.Hostage
+
 	if self:GetFollower() == activator then
 		self:SetFollower( NULL )
+		self:Speak( cfg.StaySounds )
 		CS16.Msg( activator, "hostage.stay" )
 		return
 	end
 
 	self:SetFollower( activator )
+	self:Speak( cfg.FollowSounds )
 	CS16.Msg( activator, "hostage.follow" )
 
 	hook.Run( "CS16HostageTaken", self, activator )
