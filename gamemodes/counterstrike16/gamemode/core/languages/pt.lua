@@ -222,6 +222,77 @@ CS16.RegisterLanguage( "pt", "Português", {
 ["class.hostage.name"]      = "Refém",
 ["class.hostage.desc"]      = "Não exatamente um combatente. Ninguém vai estar esperando por você.",
 
+--[[ Buy menu -------------------------------------------------------------]]
+
+["buy.title"]               = "Comprar",
+["buy.prompt"]              = "Pressione B para comprar, O para equipamento",
+["buy.title.category"]      = "Comprar {category}",
+["buy.shopbycategory"]      = "Comprar por categoria",
+["buy.cancel"]              = "Cancelar",
+["buy.primaryammo"]         = "Munição primária",
+["buy.secondaryammo"]       = "Munição secundária",
+
+["buy.kind.primary"]        = "arma primária",
+["buy.kind.secondary"]      = "arma secundária",
+
+["buy.price"]               = "Preço",
+["buy.free"]                = "Grátis",
+["buy.realname"]            = "Também conhecida como",
+["buy.description"]         = "Descrição",
+
+--[[ O que cada coisa da loja é -------------------------------------------
+
+	Curtas de propósito: uma ou duas linhas. Para que serve a arma e o que ela
+	custa a você carregar, e não uma ficha técnica.
+]]
+
+["buy.glock18.desc"]        = "Barata, silenciosa e automática em rajadas. A pistola inicial, e nem por isso ruim de perto.",
+["buy.usp.desc"]            = "Silenciada, precisa e mais forte que a Glock. O motivo de muitos Contra-Terroristas nunca comprarem outra pistola.",
+["buy.p228.desc"]           = "Uma pistola pesada e compacta. Mais poder de parada que as iniciais, sem o preço da Desert Eagle.",
+["buy.deagle.desc"]         = "Dois tiros em qualquer lugar, um na cabeça, a quase qualquer distância. Lenta, barulhenta e vale a pena.",
+["buy.python.desc"]         = "Um revólver .357. Dano enorme, seis tiros e uma recarga da qual você vai se arrepender.",
+["buy.fiveseven.desc"]      = "Vinte tiros que atravessam colete. Dano baixo sozinho, então coloque-os onde importa.",
+["buy.elite.desc"]          = "Trinta tiros em dois canos. Terrível de longe e quase impossível de sobreviver de perto.",
+
+["buy.m3.desc"]             = "Uma espingarda de bombeamento. Devastadora a poucos metros e inútil além disso.",
+["buy.xm1014.desc"]         = "Chumbo grosso tão rápido quanto o dedo aguentar. Limpa uma porta e esvazia a carteira.",
+["buy.sawn.desc"]           = "Dois canos, sem coronha, sem alcance. Tudo ao alcance do braço morre.",
+
+["buy.tmp.desc"]            = "Silenciada e barata. Mata mal, mas as mortes pagam o suficiente para comprar algo melhor.",
+["buy.mac10.desc"]          = "Espalha rápido e largo. Munição de pistola com pressa, o que de perto basta.",
+["buy.mp5navy.desc"]        = "A confiável. Controlável, precisa o bastante e barata o bastante para comprar toda rodada.",
+["buy.ump45.desc"]          = "Mais lenta que a MP5 e mais forte por isso. Perdoa erros nas distâncias em que uma submetralhadora vive.",
+["buy.p90.desc"]            = "Cinquenta tiros que atravessam colete, quase sem recuo. Cara, e odiada por todos que a enfrentam.",
+
+["buy.galil.desc"]          = "O rifle mais barato que vale carregar. Trinta e cinco tiros e precisão suficiente para importar.",
+["buy.famas.desc"]          = "Um rifle de rajada que custa menos do que deveria. Três tiros onde você mirou valem mais que trinta onde não.",
+["buy.ak47.desc"]           = "Um tiro em uma cabeça sem capacete, a qualquer distância. Coice forte, então aprenda a dar tiros curtos.",
+["buy.scout.desc"]          = "Um rifle de precisão leve que quase não te atrasa. Recompensa quem se move e pune quem fica parado.",
+["buy.m4a1.desc"]           = "O rifle dos Contra-Terroristas. Silenciado, controlável e perdoa uma primeira rajada tremida.",
+["buy.sg552.desc"]          = "Um rifle com luneta. Desajeitado nas duas funções e perigoso nas mãos de quem treinou.",
+["buy.aug.desc"]            = "A resposta Contra-Terrorista à Krieg. Aproxima a mira e perde precisão por isso.",
+["buy.sg550.desc"]          = "Um rifle de precisão automático. Atira tão rápido quanto o clique, a um preço que dói.",
+["buy.awp.desc"]            = "Qualquer acerto abaixo da cabeça mata do mesmo jeito. Um tiro, uma recarga longa e um andar lento.",
+["buy.g3sg1.desc"]          = "O rifle automático de precisão dos Terroristas. Cinco mil dólares para não precisar mirar duas vezes.",
+["buy.asval.desc"]          = "Silenciado, subsônico e perfurante. Silencioso de um jeito que nada mais nesta lista é.",
+["buy.winchester.desc"]     = "Um rifle de alavanca de um século antes desta briga. Lento, preciso e completamente fora de lugar.",
+
+["buy.m249.desc"]           = "Cem tiros, nenhuma recarga que valha esperar e um preço que ninguém justifica duas vezes.",
+["buy.m135.desc"]           = "Uma minigun. Ela gira, e então o corredor deixa de existir.",
+
+["buy.mgl.desc"]            = "Um revólver que atira granadas. Seis delas, na velocidade que você quiser.",
+["buy.law.desc"]            = "Um foguete, disparado uma vez, em algo que mereceu.",
+["buy.molotov.desc"]        = "Fogo numa garrafa. Nega terreno em vez de matar quem está nele.",
+["buy.flare.desc"]          = "Um sinalizador. Ilumina uma sala, não cega ninguém e faz bonito.",
+
+["buy.flashbang.desc"]      = "Cega quem estiver olhando, você inclusive. Duas é o limite e duas costuma ser o certo.",
+["buy.hegrenade.desc"]      = "Explosiva, e suficiente para terminar uma sala ferida. Raramente mata sozinha.",
+["buy.smoke.desc"]          = "Bloqueia uma linha de tiro pelo tempo de atravessá-la. O jeito mais barato de cruzar terreno aberto.",
+["buy.kevlar.desc"]         = "Um colete que absorve quase tudo que acerta o corpo. Nada para a cabeça.",
+["buy.kevlarhelm.desc"]     = "O colete, e um capacete que torna alguns tiros na cabeça sobrevivíveis. Vale a diferença contra rifles.",
+["buy.defusekit.desc"]      = "Corta pela metade o tempo de desarme. A diferença entre chegar à bomba e chegar a tempo.",
+["buy.nvg.desc"]            = "Ilumina o escuro, e diz a todos nele exatamente onde você está.",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Idioma: {name} ({code})",

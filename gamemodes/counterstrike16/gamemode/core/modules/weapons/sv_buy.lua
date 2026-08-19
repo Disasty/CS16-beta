@@ -8,6 +8,17 @@ util.AddNetworkString( "CS16.Buy" )
 util.AddNetworkString( "CS16.BuyAmmo" )
 
 --[[
+	1.6's clip sound, which ships with the pack and is what its ammo boxes
+	already play. Deliberately not items/gunpickup2.wav, which is the sound a
+	weapon taken off the floor makes.
+
+	Emitted on the player at a low level, so somebody beside you hears you top
+	up and it does not carry down a corridor.
+]]
+local AMMO_SOUND       = "items/9mmclip1.wav"
+local AMMO_SOUND_LEVEL = 60
+
+--[[
 	Whether the player is standing in a buy zone, mirrored to the client.
 
 	The client can't reliably enumerate the map's brush entities, so rather
@@ -212,6 +223,18 @@ function CS16.BuyAmmo( ply, kind )
 
 	CS16.TakeMoney( ply, price )
 	ply:GiveAmmo( amount, item.ammo, true )
+
+	--[[
+		Only here, at the bottom, where a purchase has actually happened. Every
+		way this can fail returns above, so , and . held down against a full
+		pouch stay silent rather than chattering.
+
+		The clip sound rather than the gun one that a floor pickup plays. Both
+		ship with the pack, 1.6 uses this one for ammo, and the pack's own ammo
+		boxes already do the same - a magazine and a rifle should not sound
+		alike when the difference is what you can do next.
+	]]
+	ply:EmitSound( AMMO_SOUND, AMMO_SOUND_LEVEL, 100, 0.7 )
 end
 
 net.Receive( "CS16.BuyAmmo", function( len, ply )

@@ -193,6 +193,78 @@ CS16.RegisterLanguage( "en", "English", {
 ["class.hostage.name"]      = "Hostage",
 ["class.hostage.desc"]      = "Not strictly a combatant. Nobody will be expecting you.",
 
+--[[ Buy menu -------------------------------------------------------------]]
+
+["buy.title"]               = "Buy Menu",
+["buy.prompt"]              = "Press B to buy, O for equipment",
+["buy.title.category"]      = "Buy {category}",
+["buy.shopbycategory"]      = "Shop by category",
+["buy.cancel"]              = "Cancel",
+["buy.primaryammo"]         = "Primary ammo",
+["buy.secondaryammo"]       = "Secondary ammo",
+
+["buy.kind.primary"]        = "primary weapon",
+["buy.kind.secondary"]      = "secondary weapon",
+
+["buy.price"]               = "Price",
+["buy.free"]                = "No charge",
+["buy.realname"]            = "Also known as",
+["buy.description"]         = "Description",
+
+--[[ What each thing in the shop is ---------------------------------------
+
+	Short on purpose: a line or two, the length of the paragraph 1.6 puts under
+	its equipment. What a gun is for, and what it costs you to carry, rather
+	than a specification.
+]]
+
+["buy.glock18.desc"]        = "Cheap, quiet and fully automatic in bursts. The starting sidearm, and no worse for it at close range.",
+["buy.usp.desc"]            = "Silenced, accurate, and hits harder than the Glock. The reason many Counter-Terrorists never buy a second pistol.",
+["buy.p228.desc"]           = "A compact heavy pistol. More stopping power than the starting sidearms without the Desert Eagle's price.",
+["buy.deagle.desc"]         = "Two hits anywhere, one to the head, at almost any range. Slow, loud, and worth it.",
+["buy.python.desc"]         = "A .357 revolver. Enormous damage, six shots, and a reload you will regret starting.",
+["buy.fiveseven.desc"]      = "Twenty rounds that punch through armour. Light damage on its own, so put them somewhere useful.",
+["buy.elite.desc"]          = "Thirty rounds across two barrels. Wildly inaccurate past a corridor and very hard to survive inside one.",
+
+["buy.m3.desc"]             = "A pump shotgun. Devastating within a few metres and useless beyond them.",
+["buy.xm1014.desc"]         = "Semi-automatic buckshot as fast as you can pull the trigger. Clears a doorway, empties a wallet.",
+["buy.sawn.desc"]           = "Two barrels, no stock, no range. Everything at arm's length dies.",
+
+["buy.tmp.desc"]            = "Silenced and cheap. Kills poorly, but the kills pay well enough to buy something better.",
+["buy.mac10.desc"]          = "Sprays fast and wide. A pistol round in a hurry, which at close range is enough.",
+["buy.mp5navy.desc"]        = "The dependable one. Controllable, accurate enough to lean on, and cheap enough to buy every round.",
+["buy.ump45.desc"]          = "Slower than the MP5 and hits harder for it. Forgiving at the ranges a sub-machine gun sees.",
+["buy.p90.desc"]            = "Fifty rounds through armour with almost no recoil. Expensive, and hated by everyone it is used against.",
+
+["buy.galil.desc"]          = "The cheapest rifle worth carrying. Thirty-five rounds and enough accuracy to matter.",
+["buy.famas.desc"]          = "A burst-fire rifle that costs less than it should. Three rounds where they are aimed beats thirty where they are not.",
+["buy.ak47.desc"]           = "One shot to an unhelmeted head at any range. Kicks hard, so learn to tap it.",
+["buy.scout.desc"]          = "A light sniper rifle that barely slows you down. Rewards moving, punishes camping.",
+["buy.m4a1.desc"]           = "The Counter-Terrorist rifle. Silenced, controllable, and forgiving of a shaky first burst.",
+["buy.sg552.desc"]          = "A rifle with a scope on it. Awkward at both jobs and dangerous in the hands of somebody who has practised.",
+["buy.aug.desc"]            = "The Counter-Terrorist answer to the Krieg. Zooms, and loses accuracy for the privilege.",
+["buy.sg550.desc"]          = "An automatic sniper rifle. Fires as fast as you can click, at a price that hurts.",
+["buy.awp.desc"]            = "Anything you hit below the head dies anyway. One shot, a long reload, and a slow walk.",
+["buy.g3sg1.desc"]          = "The Terrorist automatic sniper. Five thousand dollars of not having to aim twice.",
+["buy.asval.desc"]          = "Silenced, subsonic and armour-piercing. Quiet in a way nothing else on this list is.",
+["buy.winchester.desc"]     = "A lever-action rifle from a century before this fight. Slow, accurate, and entirely out of place.",
+
+["buy.m249.desc"]           = "A hundred rounds, no reload worth waiting for, and a price nobody can justify twice.",
+["buy.m135.desc"]           = "A minigun. It spins up, and then the corridor stops existing.",
+
+["buy.mgl.desc"]            = "A revolver that fires grenades. Six of them, as fast as you like.",
+["buy.law.desc"]            = "One rocket, fired once, at something that deserved it.",
+["buy.molotov.desc"]        = "Fire in a bottle. Denies ground rather than killing what is standing on it.",
+["buy.flare.desc"]          = "A signal flare. Lights a room, blinds nobody, and looks the part.",
+
+["buy.flashbang.desc"]      = "Blinds anyone looking at it, including you. Two is the limit and two is usually right.",
+["buy.hegrenade.desc"]      = "Explosive, and enough to finish a wounded room. Rarely kills outright.",
+["buy.smoke.desc"]          = "Blocks a sightline for long enough to cross it. The cheapest way through open ground.",
+["buy.kevlar.desc"]         = "A vest that absorbs most of what hits your body. Nothing at all for your head.",
+["buy.kevlarhelm.desc"]     = "The vest, and a helmet that turns some head shots into survivable ones. Worth the difference against rifles.",
+["buy.defusekit.desc"]      = "Halves the time a defuse takes. The difference between reaching the bomb and reaching it in time.",
+["buy.nvg.desc"]            = "Lights the dark, and tells everyone in it exactly where you are.",
+
 --[[ Language selection ----------------------------------------------------]]
 
 ["lang.current"]            = "Language: {name} ({code})",

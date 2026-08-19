@@ -18,7 +18,7 @@ rather than `sandbox` — this is a shooter, not a sandbox map with guns in it.
 - **MR12 match format** — 12 rounds a half, 60s halftime with a side swap, first to 13 wins; 12-12 goes to overtime
 - **Five a side**, locked to your team for the map — no switching to whichever side is winning. Sides shrink to fit a smaller server, so eight slots plays four a side rather than five against three
 - **Economy** — 1.6 prices throughout, round and kill rewards, `,` / `.` to buy ammo
-- **Buy menu** — number-key driven like 1.6: B for categories, O for equipment — or click it
+- **Buy menu** — 1.6's own two-page layout, number-key driven: B for categories, O for equipment. Every weapon shown as the thing itself, with its price and what it is for
 - **Objective** — plant gated to bomb sites, defuse with and without a kit, real win conditions
 - **1.6 damage** — the hitgroup multipliers the weapon pack omits: head ×4, stomach ×1.25, legs ×0.75
 - **Bots** — navmesh pathfinding, line-of-sight targeting; they buy, plant, defuse, throw grenades, clear the blast radius, and go blind when you flash them
@@ -436,7 +436,9 @@ gamemode/
       tdm/          team deathmatch: free loadouts, a running score
       br/           battle royale: authored spawns, floor loot, one survivor
     derma/        everything drawn: HUD, scoreboard, team, buy and developer
-                  menus, kill feed, camera
+                  menus, kill feed, camera. cl_menuframe.lua is the frame 1.6
+                  puts its menus in, shared by all four of them so they cannot
+                  drift apart
 ```
 
 Only the three entry points sit at the root — Garry's Mod requires those by

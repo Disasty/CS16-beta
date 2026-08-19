@@ -1,24 +1,189 @@
 --[[
-	Buy menu, driven by the number keys as 1.6's was - or by the mouse.
+	The buy menu, in the frame 1.6 puts it in.
 
-	B opens the categories, a number picks one, a number buys, 0 goes back.
-	O opens equipment directly, and , / . still top up ammo directly. Every one
-	of those rows is also clickable, and right-click goes back, so nobody has to
-	learn the numbers to play.
+	Two pages. The top level lists the categories under a "shop by category"
+	heading; a category lists what you can buy in it, with the thing itself
+	turning on the right and its price and description underneath. 0 goes back a
+	level, and back again closes.
 
-	Both routes share one layout: Layout() hands out the row rectangles, and the
-	drawing and the hit test both read them. Nothing can drift out of line
-	because there is only one set of positions.
+	It wears cl_menuframe.lua, the same frame as Select Team, Choose A Class and
+	the battle royale picker, which is what makes four screens read as one menu
+	rather than four.
 
-	The numbers arrive through PlayerBindPress rather than raw key state, because
-	1 to 9 are bound to slot1..slot9. Returning true from there both takes the
-	press and stops it putting your weapon away underneath you.
+	1.6 fills the panel on the right with a rendered picture of the gun. Those
+	are Valve's and are not ours to ship, and they would be the wrong guns
+	anyway - the picture would be of Valve's model and ours are the pack's. So
+	it holds the actual thing you are about to buy, turning, the same way the
+	class screen holds the character you are about to become.
+
+	Driven by the number keys as 1.6's was, or by the mouse. Both routes go
+	through the same Choose(), so they cannot disagree about what a number
+	means.
 ]]
 
-local MENU_W  = 420
-local ROW_H   = 30
-local PAD     = 14
-local TITLE_H = 44
+--[[ Layout, in the design units cl_menuframe scales. ]]
+
+local HEADING_Y = 178
+
+--[[
+	Cancel sits far lower here than on the join menus.
+
+	Those have four or five rows and a gap before the odd one out, so the frame
+	puts their footer at 582. The buy menu has eight categories and up to twelve
+	rifles, and 1.6 drops its cancel to the bottom of the panel to make room.
+	Using the join menus' figure squeezed eight categories into the space four
+	were drawn for.
+]]
+local FOOTER_Y = 832
+
+--[[
+	The preview box is a letterbox rather than the tall panel the class screen
+	uses. A rifle is long and thin: given a square it would sit in the middle of
+	a great deal of nothing.
+]]
+local PREVIEW = { x = 505, y = 213, w = 675, h = 185 }
+
+-- Where price and description start, and where their values line up.
+local TEXT_Y     = 436
+local LABEL_X    = 530
+local VALUE_X    = 850
+local LINE_STEP  = 30
+
+local PREVIEW_FOV = 40
+
+--[[
+	How a weapon is held in the preview box.
+
+	These lie flat: forty-seven units long, thirty-six across, two thick. A
+	level camera sees the two, which is a dark line. Pitching brings the broad
+	face round to the front, and the yaw points the barrel down and to the
+	right, the way 1.6's pictures do.
+
+	The models do not agree with each other about which way is forward, so each
+	one that needs it gets its own entry below. Everything else takes the
+	default.
+
+	These were dialled in by eye against the real thing rather than worked out,
+	which is why they look arbitrary. They are.
+]]
+local PREVIEW_ANGLE  = Angle( -90, 180, 0 )
+local PREVIEW_MARGIN = 0.92
+
+--[[
+	Every one that needed dialling in, and how far back the camera sits for it.
+
+	Tuned by eye against the real thing rather than worked out, because these
+	models disagree with each other about which way is forward and by how much.
+	An entry left out takes the default above, which suits most of the rifles.
+
+	Zoom is a camera distance multiplier: below 1 is closer, so 0.50 fills the
+	box with a pistol that would otherwise sit in the middle of it.
+]]
+local PREVIEW_ANGLES = {
+	-- Pistols
+	glock18    = { ang = Angle(  162,  -85, -87 ), zoom = 0.59 },
+	usp        = { ang = Angle( -153,  -85, -87 ), zoom = 0.50 },
+	p228       = { ang = Angle( -150,  -91, -91 ), zoom = 0.50 },
+	deagle     = { ang = Angle(  162, -101, -81 ), zoom = 0.55 },
+	fiveseven  = { ang = Angle( -139,  -90, -90 ), zoom = 0.81 },
+	elite      = { ang = Angle(  162,  -91, -91 ), zoom = 0.62 },
+	python     = { ang = Angle(  101,   88, -91 ), zoom = 0.76 },
+
+	-- Shotguns
+	m3         = { ang = Angle(  147,  -91, -91 ), zoom = 0.50 },
+	xm1014     = { ang = Angle(   -6,   90, -91 ) },
+	sawn       = { ang = Angle(   75,  -91, -91 ), zoom = 0.65 },
+
+	-- Sub-machine guns
+	tmp        = { ang = Angle(  137,  -91, -91 ), zoom = 0.50 },
+	mac10      = { ang = Angle(    0,   89, -91 ), zoom = 1.11 },
+	mp5navy    = { ang = Angle(   97,   89, -91 ), zoom = 0.83 },
+	ump45      = { ang = Angle( -158,  -91, -91 ), zoom = 0.58 },
+	p90        = { ang = Angle(  148,  -91, -91 ), zoom = 0.50 },
+
+	-- Rifles
+	galil      = { ang = Angle(  -74,  -91, -91 ), zoom = 0.50 },
+	famas      = { ang = Angle( -118,  -91, -91 ), zoom = 0.50 },
+	ak47       = { ang = Angle(  167,  -91, -91 ), zoom = 0.62 },
+	scout      = { ang = Angle( -160,  -91, -91 ), zoom = 0.50 },
+	m4a1       = { ang = Angle( -145,  -91, -91 ), zoom = 0.50 },
+	sg552      = { ang = Angle(  138,  -91, -92 ), zoom = 0.50 },
+	aug        = { ang = Angle(  150,  -91, -91 ), zoom = 0.50 },
+	sg550      = { ang = Angle(  155,  -91, -91 ), zoom = 0.50 },
+	awp        = { ang = Angle(  164,  -91, -91 ), zoom = 0.50 },
+	g3sg1      = { ang = Angle(  162,  -91, -91 ), zoom = 0.50 },
+	asval      = { ang = Angle(  -27,   89, -91 ), zoom = 0.50 },
+	winchester = { ang = Angle(  152,  -91, -91 ), zoom = 0.50 },
+
+	-- Machine guns
+	m249       = { ang = Angle(  175,  -91, -91 ), zoom = 0.81 },
+	m135       = { ang = Angle(  160,  -91, -91 ), zoom = 0.50 },
+
+	-- Explosives
+	mgl        = { ang = Angle(   69,  -91, -91 ), zoom = 0.63 },
+	law        = { ang = Angle(  162,  -91, -91 ), zoom = 0.50 },
+	molotov    = { ang = Angle(  -90,  180,   0 ), zoom = 1.10 },
+	flare      = { ang = Angle(  164,  -65, -15 ) },
+
+	--[[
+		The three thrown ones share a shape and so share a framing: the default
+		turned about, and closer, because a grenade given a rifle's camera is a
+		speck in the middle of a letterbox.
+	]]
+	flashbang  = { ang = Angle(  -90,    0,   0 ), zoom = 1.25 },
+	hegrenade  = { ang = Angle(  -90,    0,   0 ), zoom = 1.25 },
+	smoke      = { ang = Angle(  -90,    0,   0 ), zoom = 1.25 },
+
+	-- Equipment
+	nvg        = { ang = Angle(    0,    2,   0 ), zoom = 1.10 },
+	defusekit  = { ang = Angle(   -5,  -91, -91 ) },
+}
+
+--[[
+	How this item is held and how close the camera sits, falling back to the
+	default for anything not tuned.
+]]
+local function PreviewFor( item )
+	local entry = PREVIEW_ANGLES[ item.id ]
+	if not entry then return PREVIEW_ANGLE, PREVIEW_MARGIN end
+
+	return entry.ang or PREVIEW_ANGLE, entry.zoom or PREVIEW_MARGIN
+end
+
+--[[
+	Where deriving a model name gets it wrong, or where there is no weapon to
+	derive one from.
+
+	Everything else follows from the SWEP: its WorldModel is the posed p_ model
+	that sits in a player's hands, and the standalone pickup is the same name
+	under models/cs16 with a w_ on it. These five are the exceptions. The pack
+	calls the MP5's pickup w_mp3, the LAW's world model carries a suffix its
+	pickup does not, and armour is not a weapon at all so there is nothing to
+	ask - both vests show the same vest.
+]]
+local MODEL_OVERRIDE = {
+	mp5navy    = "models/cs16/w_mp3.mdl",
+	law        = "models/cs16/w_law.mdl",
+	kevlar     = "models/cs16/w_kevlar.mdl",
+	kevlarhelm = "models/cs16/w_kevlar.mdl",
+	defusekit  = "models/cs16/w_thighpack.mdl",
+}
+
+local function PreviewModel( item )
+	if MODEL_OVERRIDE[ item.id ] then return MODEL_OVERRIDE[ item.id ] end
+	if not item.class then return nil end
+
+	local stored = weapons.GetStored( item.class )
+	if not stored or not stored.WorldModel then return nil end
+
+	local guess = stored.WorldModel:gsub( "models/weapons/cs16/p_", "models/cs16/w_" )
+	if file.Exists( guess, "GAME" ) then return guess end
+
+	-- Better a posed model than an empty box.
+	if file.Exists( stored.WorldModel, "GAME" ) then return stored.WorldModel end
+end
+
+--[[ State ]]
 
 -- nil when closed, "root" at the top level, otherwise a category id.
 local page
@@ -31,8 +196,9 @@ local page
 ]]
 local home
 
--- The invisible panel that lends us a cursor. See ShowCursor.
-local cursor
+local frame
+
+--[[ What is on each page ]]
 
 --[[
 	The top level, built from the catalogue rather than listed here.
@@ -49,22 +215,19 @@ local cursor
 local function RootEntries()
 	local teamID  = LocalPlayer():Team()
 	local entries = {}
-	local last    -- equipment, kept for the bottom
+	local last
 
 	for _, category in ipairs( CS16.BuyCategories ) do
 		if CS16.CategoryAllowedForTeam( category, teamID ) then
-			local entry = { label = string.upper( category.name ), category = category.id }
+			local entry = { label = category.name, category = category.id }
 
-			if category.id == "equipment" then
-				last = entry
-			else
-				entries[ #entries + 1 ] = entry
-			end
+			if category.id == "equipment" then last = entry
+			else entries[ #entries + 1 ] = entry end
 		end
 	end
 
-	entries[ #entries + 1 ] = { label = "PRIMARY AMMO",   ammo = true }
-	entries[ #entries + 1 ] = { label = "SECONDARY AMMO", ammo = false }
+	entries[ #entries + 1 ] = { label = CS16.L( "buy.primaryammo" ),   ammo = true }
+	entries[ #entries + 1 ] = { label = CS16.L( "buy.secondaryammo" ), ammo = false }
 
 	if last then entries[ #entries + 1 ] = last end
 
@@ -91,75 +254,31 @@ local function VisibleItems( category )
 	return visible
 end
 
---[[ Opening and closing ]]
-
-function CS16.BuyMenuOpen()
-	return page ~= nil
-end
-
 --[[
-	A popup panel purely so there's a cursor to click with. It paints nothing -
-	the menu is still drawn in HUDPaint - and it takes the mouse only.
+	1.6 says which slot a category fills: "Buy Shotguns (primary weapon)".
 
-	Keyboard input has to be switched off *after* MakePopup, which turns both on.
-	Leaving the keyboard captured would send the number keys into VGUI, and
-	PlayerBindPress would never see them - which would cost us the entire keyboard
-	route the moment we added the mouse one.
+	Read off what is in the category rather than declared on it, so adding a
+	weapon to the shop stays a one-line change. Only the two slots that can hold
+	one thing at a time are worth saying: nobody needs telling that the grenades
+	are grenades.
 ]]
-local ClickAt -- defined below, once Choose exists
+local function CategorySuffix( category )
+	local kind = category.items[ 1 ] and category.items[ 1 ].kind
 
-local function ShowCursor()
-	if IsValid( cursor ) then return end
+	if kind ~= "primary" and kind ~= "secondary" then return "" end
 
-	cursor = vgui.Create( "DPanel" )
-	cursor:SetSize( ScrW(), ScrH() )
-	cursor:SetPaintBackground( false )
-	cursor:MakePopup()
-	cursor:SetKeyboardInputEnabled( false )
-
-	cursor.OnMousePressed = function( _, code )
-		if code == MOUSE_RIGHT then ClickAt( nil ) return end
-
-		local x, y = gui.MousePos()
-		ClickAt( x, y )
-	end
+	return " (" .. CS16.L( "buy.kind." .. kind ) .. ")"
 end
 
-local function HideCursor()
-	if IsValid( cursor ) then cursor:Remove() end
-	cursor = nil
-end
-
-function CS16.CloseBuyMenu()
-	page, home = nil, nil
-	HideCursor()
-end
-
-function CS16.OpenBuyMenu( startPage )
-	local allowed, reason = CS16.CanBuy( LocalPlayer() )
-
-	if not allowed then
-		chat.AddText( CS16.Colors.Gold, "[CS 1.6] ", CS16.Colors.White, reason )
-		return
-	end
-
-	home = startPage or "root"
-	page = home
-
-	ShowCursor()
-end
-
-function CS16.ToggleBuyMenu()
-	if CS16.BuyMenuOpen() then CS16.CloseBuyMenu() else CS16.OpenBuyMenu() end
-end
-
---[[ Choosing ]]
+--[[ Buying ]]
 
 local function BuyAmmo( primary )
 	net.Start( "CS16.BuyAmmo" )
 		net.WriteBool( primary )
 	net.SendToServer()
 end
+
+local Build -- defined below; Choose rebuilds the page it lands on
 
 local function Choose( index )
 	--[[
@@ -168,7 +287,7 @@ local function Choose( index )
 		there rather than dropping you somewhere you never asked to be.
 	]]
 	if index == 0 then
-		if page == home then CS16.CloseBuyMenu() else page = "root" end
+		if page == home then CS16.CloseBuyMenu() else page = "root" Build() end
 		return
 	end
 
@@ -180,6 +299,7 @@ local function Choose( index )
 
 		if entry.category then
 			page = entry.category
+			Build()
 		else
 			BuyAmmo( entry.ammo )
 		end
@@ -205,127 +325,279 @@ local function Choose( index )
 		O it's equipment, so a flash and a smoke are two keys and not six.
 	]]
 	page = home
-end
-
---[[ Layout ]]
-
--- Rows carry their own rectangle so drawing and clicking can't disagree.
-local function Layout()
-	local rows, title
-
-	if page == "root" then
-		rows, title = {}, "BUY MENU"
-
-		for i, entry in ipairs( RootEntries() ) do
-			rows[ #rows + 1 ] = { number = i, label = entry.label, affordable = true }
-		end
-	else
-		local category = CategoryById( page )
-		if not category then return nil end
-
-		local ply   = LocalPlayer()
-		local money = CS16.GetMoney( ply )
-
-		rows, title = {}, "BUY " .. string.upper( category.name )
-
-		for i, item in ipairs( VisibleItems( category ) ) do
-			-- Asked rather than read off the item, so a developer sees the free
-			-- prices they'll actually be charged.
-			local price = CS16.PriceFor( ply, item )
-
-			rows[ #rows + 1 ] = {
-				number     = i,
-				label      = string.upper( item.name ),
-				price      = price,
-				affordable = money >= price,
-			}
-		end
-	end
-
-	-- The back row sits below a gap, and is a row like any other so it clicks.
-	rows[ #rows + 1 ] = {
-		number     = 0,
-		label      = ( page == home ) and "CANCEL" or "BACK",
-		affordable = true,
-		gap        = true,
-	}
-
-	local h = TITLE_H + #rows * ROW_H + PAD + 8
-	local x = 60
-	local y = ( ScrH() - h ) * 0.5
-
-	local rowY = y + TITLE_H
-
-	for _, row in ipairs( rows ) do
-		if row.gap then rowY = rowY + 4 end
-
-		row.x, row.y = x + PAD, rowY
-		row.w, row.h = MENU_W - PAD * 2, ROW_H - 4
-
-		rowY = rowY + ROW_H
-	end
-
-	return rows, title, x, y, h
-end
-
-function ClickAt( mx, my )
-	-- Right-click, or a click on nothing much, is a step back.
-	if not mx then Choose( 0 ) return end
-
-	local rows = Layout()
-	if not rows then return end
-
-	for _, row in ipairs( rows ) do
-		if mx >= row.x and mx <= row.x + row.w
-			and my >= row.y and my <= row.y + row.h then
-			Choose( row.number )
-			return
-		end
-	end
+	Build()
 end
 
 --[[ Drawing ]]
 
-local function DrawRow( row, hovered )
-	surface.SetDrawColor( hovered and CS16.Colors.Hover or CS16.Colors.PanelLight )
-	surface.DrawRect( row.x, row.y, row.w, row.h )
+--[[
+	The list has to fit between the first row and the cancel button, and a
+	category can be longer than the frame's standard pitch allows: the rifles
+	are twelve entries for a developer against the eight that pitch was drawn
+	for. Rather than overflow, the pitch tightens until they fit.
+]]
+local function Pitch( count, d )
+	local span    = FOOTER_Y - d.ListY - d.ButtonGap
+	local natural = d.ButtonH + d.ButtonGap
 
-	surface.SetDrawColor( hovered and CS16.Colors.Gold or CS16.Colors.GoldDim )
-	surface.DrawOutlinedRect( row.x, row.y, row.w, row.h, 1 )
+	if count <= 1 then return natural end
 
-	local col = row.affordable and CS16.Colors.Gold or CS16.Colors.Muted
-	CS16.DrawText( row.number .. "  " .. row.label, "CS16.Text",
-		row.x + 10, row.y + 5, col, TEXT_ALIGN_LEFT )
-
-	if row.price then
-		CS16.DrawText( "$" .. row.price, "CS16.Text", row.x + row.w - 10, row.y + 5,
-			row.affordable and CS16.Colors.White or CS16.Colors.Danger, TEXT_ALIGN_RIGHT )
-	end
+	return math.min( natural, span / count )
 end
 
-hook.Add( "HUDPaint", "CS16.BuyMenu", function()
-	if not CS16.BuyMenuOpen() then return end
+local function AddPreview( item )
+	local model = PreviewModel( item )
+	if not model then return nil end
 
-	local rows, title, x, y, h = Layout()
-	if not rows then return end
+	local s = frame.Scale
 
-	CS16.DrawPanel( x, y, MENU_W, h )
+	local mdl = frame:Add( "DModelPanel" )
+	mdl:SetPos( PREVIEW.x * s + 1, PREVIEW.y * s + 1 )
+	mdl:SetSize( PREVIEW.w * s - 2, PREVIEW.h * s - 2 )
+	mdl:SetMouseInputEnabled( false )
+	mdl:SetFOV( PREVIEW_FOV )
+	mdl:SetModel( model )
 
-	CS16.DrawText( title, "CS16.Title", x + PAD, y + 12, CS16.Colors.Gold, TEXT_ALIGN_LEFT )
-	CS16.DrawText( "$" .. CS16.GetMoney( LocalPlayer() ), "CS16.Title",
-		x + MENU_W - PAD, y + 12, CS16.Colors.Gold, TEXT_ALIGN_RIGHT )
+	--[[
+		Turned before it is measured, not after.
 
-	surface.SetDrawColor( CS16.Colors.GoldDim )
-	surface.DrawRect( x + PAD, y + TITLE_H - 8, MENU_W - PAD * 2, 1 )
+		FitModel reads the angles off the entity, and LayoutEntity does not run
+		until the panel first paints - so fitting here without setting them
+		first measures the model lying flat, decides it is two units tall, and
+		puts the camera close enough to crop a rifle in half.
+	]]
+	local ang, zoom = PreviewFor( item )
 
-	local mx, my = gui.MousePos()
+	if IsValid( mdl.Entity ) then mdl.Entity:SetAngles( ang ) end
 
-	for _, row in ipairs( rows ) do
-		local hovered = mx >= row.x and mx <= row.x + row.w
-			and my >= row.y and my <= row.y + row.h
+	CS16.Menu.FitModel( mdl, PREVIEW_FOV, zoom )
 
-		DrawRow( row, hovered )
+	--[[
+		Held at an angle rather than turned.
+
+		These models are almost flat - a rifle measures forty-seven units long
+		and two deep - so a model left spinning presents its edge twice a
+		revolution and briefly disappears. 1.6 shows a still picture at three
+		quarters, which is the view that reads as a gun, so it is held there.
+	]]
+	mdl.LayoutEntity = function( self, ent )
+		ent:SetAngles( ang )
 	end
+
+	return mdl
+end
+
+
+--[[ Pages ]]
+
+local function BuildRoot()
+	local s, d   = frame.Scale, CS16.Menu.Design
+	local entries = RootEntries()
+
+	local basePaint = frame.Paint
+
+	frame.Paint = function( self, pw, ph )
+		basePaint( self, pw, ph )
+
+		CS16.DrawText( CS16.Upper( CS16.L( "buy.shopbycategory" ) ), "CS16.MenuItem",
+			d.ListX * s, HEADING_Y * s, CS16.Colors.Amber, TEXT_ALIGN_LEFT )
+	end
+
+	local buttons = {}
+	local pitch   = Pitch( #entries, d )
+
+	for i, entry in ipairs( entries ) do
+		buttons[ #buttons + 1 ] = CS16.Menu.Button( frame, i,
+			function() return entry.label end,
+			( d.ListY * s ) + ( i - 1 ) * pitch * s,
+			function() return false end,
+			function() Choose( i ) end )
+	end
+
+	buttons[ #buttons + 1 ] = CS16.Menu.Button( frame, 0,
+		function() return CS16.L( "buy.cancel" ) end, FOOTER_Y * s,
+		function() return false end,
+		function() Choose( 0 ) end )
+
+	CS16.Menu.BindNumbers( frame, buttons, function() Choose( 0 ) end )
+end
+
+local function BuildCategory( category )
+	local s, d = frame.Scale, CS16.Menu.Design
+	local items = VisibleItems( category )
+
+	local selected = 1
+	local preview
+
+	local function Show( i )
+		selected = i
+
+		if IsValid( preview ) then preview:Remove() end
+		preview = AddPreview( items[ i ] )
+	end
+
+	local basePaint = frame.Paint
+
+	frame.Paint = function( self, pw, ph )
+		basePaint( self, pw, ph )
+
+		-- The box the model sits in, drawn whether or not there is a model.
+		surface.SetDrawColor( CS16.Colors.Amber )
+		surface.DrawOutlinedRect( PREVIEW.x * s, PREVIEW.y * s, PREVIEW.w * s, PREVIEW.h * s, 1 )
+
+		local item = items[ selected ]
+		if not item then return end
+
+		local y = TEXT_Y * s
+
+		local function Row( label, value )
+			CS16.DrawText( CS16.Upper( label ), "CS16.MenuBody", LABEL_X * s, y,
+				CS16.Colors.Amber, TEXT_ALIGN_LEFT )
+			CS16.DrawText( ": " .. value, "CS16.MenuBody", VALUE_X * s, y,
+				CS16.Colors.Gold, TEXT_ALIGN_LEFT )
+			y = y + LINE_STEP * s
+		end
+
+		--[[
+			A developer weapon costs nothing, and "$0" reads like a bug rather
+			than like a thing the shop is giving away.
+		]]
+		Row( CS16.L( "buy.price" ),
+			item.price > 0 and ( "$" .. item.price ) or CS16.L( "buy.free" ) )
+
+		--[[
+			The real designation, because the 1.6 codenames are cryptic if you
+			did not grow up with them: "CV-47" tells you nothing, "AK-47" tells
+			you everything.
+
+			Guns only. On a grenade or a vest the same field carries a note
+			rather than a name - "Max 2", "100 armour" - and a flashbang listed
+			as also being known as "Max 2" reads like a mistake. The description
+			says those things properly.
+		]]
+		if item.real and ( item.kind == "primary" or item.kind == "secondary" ) then
+			Row( CS16.L( "buy.realname" ), item.real )
+		end
+
+		-- Wrapped, because a translated line is a different length from the
+		-- English one and no hand-placed break survives that.
+		local desc = CS16.L( "buy." .. item.id .. ".desc" )
+
+		if desc ~= "buy." .. item.id .. ".desc" then
+			CS16.DrawText( CS16.Upper( CS16.L( "buy.description" ) ), "CS16.MenuBody",
+				LABEL_X * s, y, CS16.Colors.Amber, TEXT_ALIGN_LEFT )
+
+			local wrap = ( PREVIEW.x + PREVIEW.w - VALUE_X ) * s
+
+			for n, line in ipairs( CS16.WrapText( desc, "CS16.MenuBody", wrap ) ) do
+				CS16.DrawText( ( n == 1 and ": " or "  " ) .. line, "CS16.MenuBody",
+					VALUE_X * s, y, CS16.Colors.Gold, TEXT_ALIGN_LEFT )
+				y = y + LINE_STEP * s
+			end
+		end
+	end
+
+	local buttons = {}
+	local pitch   = Pitch( #items, d )
+
+	for i, item in ipairs( items ) do
+		buttons[ #buttons + 1 ] = CS16.Menu.Button( frame, i,
+			function() return item.name end,
+			( d.ListY * s ) + ( i - 1 ) * pitch * s,
+			function() return selected == i end,
+			function()
+				--[[
+					First press shows it, second buys it. 1.6 buys on the first
+					press, but 1.6 shows a picture that never changes; ours shows
+					the thing itself and it would be a waste never to let anyone
+					look at it before spending on it.
+				]]
+				if selected ~= i then Show( i ) return end
+				Choose( i )
+			end )
+	end
+
+	buttons[ #buttons + 1 ] = CS16.Menu.Button( frame, 0,
+		function() return CS16.L( "buy.cancel" ) end, FOOTER_Y * s,
+		function() return false end,
+		function() Choose( 0 ) end )
+
+	if items[ 1 ] then Show( 1 ) end
+
+	CS16.Menu.BindNumbers( frame, buttons, function() Choose( 0 ) end )
+end
+
+--[[
+	Rebuild for whatever page is current.
+
+	The frame is thrown away and remade rather than edited, because the two
+	pages have different contents and different paint, and a panel that has been
+	half converted from one to the other is a worse thing to debug than one that
+	is simply built again.
+]]
+function Build()
+	if IsValid( frame ) then frame:Remove() end
+	if not page then return end
+
+	local category = page ~= "root" and CategoryById( page ) or nil
+
+	--[[
+		The title carries the category on a category page, the way 1.6's does:
+		"Buy Shotguns (primary weapon)". Passed as a function because it needs a
+		value substituted, which a bare key cannot carry.
+	]]
+	frame = CS16.Menu.Frame( category and function()
+		return CS16.L( "buy.title.category", { category = category.name } )
+			.. CategorySuffix( category )
+	end or "buy.title" )
+
+	CS16.BuyFrame = frame
+
+	if category then BuildCategory( category ) else BuildRoot() end
+end
+
+--[[ Opening and closing ]]
+
+function CS16.BuyMenuOpen()
+	return page ~= nil
+end
+
+function CS16.CloseBuyMenu()
+	page, home = nil, nil
+
+	if IsValid( frame ) then frame:Remove() end
+	frame = nil
+	CS16.BuyFrame = nil
+end
+
+function CS16.OpenBuyMenu( startPage )
+	local allowed, reason = CS16.CanBuy( LocalPlayer() )
+
+	if not allowed then
+		chat.AddText( CS16.Colors.Gold, "[CS 1.6] ", CS16.Colors.White, reason )
+		return
+	end
+
+	home = startPage or "root"
+	page = home
+
+	Build()
+end
+
+function CS16.ToggleBuyMenu()
+	if CS16.BuyMenuOpen() then CS16.CloseBuyMenu() else CS16.OpenBuyMenu() end
+end
+
+--[[
+	Buy time running out closes it, rather than leaving a menu open that can no
+	longer spend anything. Checked on a timer rather than every frame: this is a
+	once-a-round event and the menu is usually shut.
+]]
+timer.Create( "CS16.BuyMenuGuard", 0.5, 0, function()
+	if not CS16.BuyMenuOpen() then return end
+	if not IsValid( LocalPlayer() ) then return end
+
+	if not CS16.CanBuy( LocalPlayer() ) then CS16.CloseBuyMenu() end
 end )
 
 --[[ Input ]]
@@ -335,10 +607,13 @@ concommand.Add( "cs16_buymenu", CS16.ToggleBuyMenu )
 CS16.WatchKey( "buymenu", KEY_B, function()
 	if not CS16.BuyMenuOpen() then CS16.OpenBuyMenu() return end
 
-	-- From the equipment menu, B is how you reach the full buy menu rather than
-	-- a second key that closes it. O is what closes equipment.
+	--[[
+		From the equipment menu, B is how you reach the full buy menu rather
+		than a second key that closes it. O is what closes equipment.
+	]]
 	if home == "equipment" then
 		home, page = "root", "root"
+		Build()
 		return
 	end
 
@@ -354,6 +629,7 @@ CS16.WatchKey( "buyequipment", KEY_O, function()
 
 	if CS16.BuyMenuOpen() then
 		home, page = "equipment", "equipment"
+		Build()
 		return
 	end
 
@@ -364,36 +640,11 @@ end )
 CS16.WatchKey( "buyammoprimary",   KEY_COMMA,  function() BuyAmmo( true ) end )
 CS16.WatchKey( "buyammosecondary", KEY_PERIOD, function() BuyAmmo( false ) end )
 
-hook.Add( "PlayerBindPress", "CS16.BuyMenuKeys", function( ply, bind, pressed )
-	if not pressed or not CS16.BuyMenuOpen() then return end
-
-	local slot = tonumber( string.match( bind, "^slot(%d+)$" ) or "" )
-	if not slot then return end
-
-	-- The zero key comes through as slot10.
-	if slot == 10 then slot = 0 end
-
-	Choose( slot )
-	return true
-end )
-
--- Buy time running out closes the menu under you, same as the round starting
--- would in 1.6.
-hook.Add( "Think", "CS16.BuyMenuClose", function()
-	if CS16.BuyMenuOpen() and not CS16.CanBuy( LocalPlayer() ) then
-		CS16.CloseBuyMenu()
-	end
-
-	-- A cursor left up with no menu behind it would lock the mouse out of the
-	-- game entirely, so it's swept up here rather than trusted to one caller.
-	if not CS16.BuyMenuOpen() and IsValid( cursor ) then HideCursor() end
-end )
-
 -- Quiet prompt so players know buying is available without opening anything.
 hook.Add( "HUDPaint", "CS16.BuyPrompt", function()
 	if CS16.BuyMenuOpen() then return end
 	if not CS16.CanBuy( LocalPlayer() ) then return end
 
-	CS16.DrawText( "Press B to buy, O for equipment", "CS16.Text", ScrW() * 0.5, ScrH() - 96,
+	CS16.DrawText( CS16.L( "buy.prompt" ), "CS16.Text", ScrW() * 0.5, ScrH() - 96,
 		CS16.Colors.Muted, TEXT_ALIGN_CENTER )
 end )
