@@ -119,21 +119,28 @@ local function AddCell( menu, index, label, model, x, y, w, h )
 		models, so they carry the player animation set and idle_all_01 is the
 		same standing idle the hostages use.
 
-		Only the one under the cursor turns. Ten of them revolving at once is a
-		fairground, and each costs a bone rebuild every frame it moves. The
-		class screen does the opposite for the opposite reason: one model, and
-		it is the thing being chosen.
+		None of them turn. The one under the cursor used to, which cost a bone
+		rebuild every frame and pointed the pose away from whoever was looking
+		at it. It animates on hover instead, which is enough to show the cell is
+		live without spinning the character out of view.
 	]]
 	icon.LayoutEntity = function( self, ent )
-		local seq = ent:LookupSequence( "idle_all_01" )
-		if seq and seq > 0 and ent:GetSequence() ~= seq then ent:ResetSequence( seq ) end
+		-- A pose of ours where one exists. See sh_menuposes.lua.
+		local seq = CS16.MenuPoseFor( ent )
+		if seq and ent:GetSequence() ~= seq then ent:ResetSequence( seq ) end
 
-		if cell:IsHovered() then
-			ent:SetAngles( Angle( 0, RealTime() * 45 % 360, 0 ) )
-			self:RunAnimation()
-		else
-			ent:SetAngles( angle_zero )
-		end
+		ent:SetAngles( angle_zero )
+
+		if cell:IsHovered() then self:RunAnimation() end
+	end
+
+	-- The gun the pose is holding, drawn inside the cell's own 3D pass.
+	icon.PostDrawModel = function( self, ent )
+		CS16.DrawMenuProp( self, ent )
+	end
+
+	icon.OnRemove = function( self )
+		CS16.ClearMenuProp( self )
 	end
 
 	--[[

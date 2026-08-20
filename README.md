@@ -27,6 +27,7 @@ rather than `sandbox` — this is a shooter, not a sandbox map with guns in it.
 - **Flashlight** on `F` — Half-Life 1's, which lights the surface you're looking at rather than throwing a cone from your eye
 - **Kill feed** — the original 1.6 death sprites, with headshot markers
 - **HUD, scoreboard, team and buy menus** — one cohesive 1.6 look, drawn from the original HUD sprites
+- **Menu poses** — the class and model screens stand a character the way 1.6 posed them, weapon in hand, rather than in a default idle
 - **Languages** — English and Portuguese, picked from your Garry's Mod language automatically ([below](#languages))
 - **Admin** — two ranks, chat commands, ranks persisted to disk
 - **Developer tools** — a team you can walk a live match in, plus noclip, third person, phase, and a C menu for authoring map data ([below](#developer-tools))
@@ -439,6 +440,8 @@ gamemode/
                   menus, kill feed, camera. cl_menuframe.lua is the frame 1.6
                   puts its menus in, shared by all four of them so they cannot
                   drift apart
+      animations/ the poses the menus stand a model in, registered through wOS
+                  DynaBase. Animations by Xp1
 ```
 
 Only the three entry points sit at the root — Garry's Mod requires those by
@@ -748,7 +751,7 @@ have done most of the work.
 
 - Gamemode by **disastrous**
 - **Xp1** — the CS 1.6 weapon packs, effects and the wOS port edition that
-  nearly everything you see and hear in game comes from
+  nearly everything you see and hear in game comes from, and the menu poses
 - **Geisteskrankenchan** — Counter-Strike 1.6 player models
 - **King David™** — wOS DynaBase, the animation system underneath it all
 - **White_Mask** — the `de_dust2_classic` port

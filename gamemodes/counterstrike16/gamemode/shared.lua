@@ -32,6 +32,13 @@ include( "core/languages/en.lua" )
 include( "core/languages/pt.lua" )
 
 include( "core/libraries/sh_teams.lua" )
+
+--[[
+	Before anything draws a model, and crucially before CreateTeams: DynaBase
+	fires its animation load from there, so a pose registered any later is
+	registered after the only moment it would be read.
+]]
+include( "core/modules/animations/sh_menuposes.lua" )
 include( "core/libraries/sh_phase.lua" )
 include( "core/libraries/sh_roundstate.lua" )
 

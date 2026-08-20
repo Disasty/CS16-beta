@@ -89,17 +89,33 @@ local function AddPreview( frame )
 	mdl:SetFOV( PREVIEW_FOV )
 
 	--[[
-		Turning slowly and continuously rather than only on hover, because this
-		is the only model on screen and it is the thing being chosen. The grid
-		in battle royale does the opposite for the opposite reason: ten of them
-		revolving at once is a fairground.
+		Facing front and staying there.
+
+		It turned slowly at first, on the grounds that this is the only model on
+		screen. That was a mistake: a figure that is always moving is never
+		showing you the front, and the pose it is standing in was made to be
+		looked at from there.
 	]]
 	mdl.LayoutEntity = function( self, ent )
-		local seq = ent:LookupSequence( "idle_all_01" )
-		if seq and seq > 0 and ent:GetSequence() ~= seq then ent:ResetSequence( seq ) end
+		--[[
+			A pose of ours where one exists, the standing idle otherwise. See
+			core/modules/animations/sh_menuposes.lua: a model with no pose is
+			not a problem, it just stands normally.
+		]]
+		local seq = CS16.MenuPoseFor( ent )
+		if seq and ent:GetSequence() ~= seq then ent:ResetSequence( seq ) end
 
-		ent:SetAngles( Angle( 0, RealTime() * 24 % 360, 0 ) )
+		ent:SetAngles( angle_zero )
 		self:RunAnimation()
+	end
+
+	-- The gun the pose is holding, drawn inside the panel's own 3D pass.
+	mdl.PostDrawModel = function( self, ent )
+		CS16.DrawMenuProp( self, ent )
+	end
+
+	mdl.OnRemove = function( self )
+		CS16.ClearMenuProp( self )
 	end
 
 	mdl.Show = function( self, model )

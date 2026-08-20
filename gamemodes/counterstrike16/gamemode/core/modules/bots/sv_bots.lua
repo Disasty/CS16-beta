@@ -1395,6 +1395,54 @@ local function ObjectiveButtons( bot, cmd, buttons )
 	return buttons
 end
 
+--[[
+	Put the best thing they are carrying in their hands.
+
+	Bots only ever changed weapon when the one they held ran dry, which is fine
+	for a rifle and useless for a knife: a knife never runs out, so a battle
+	royale bot that started with one and picked a rifle up off the floor kept
+	the knife for the rest of the round.
+
+	Deliberately narrow about when it fires. A bot holding a grenade or the
+	bomb chose that on purpose and is probably part way through using it, so
+	those are left alone entirely - snatching a rifle back into their hands
+	mid-throw would be worse than the problem this fixes.
+
+	Throttled because it runs from StartCommand, which is every tick for every
+	bot, and nothing about a bot's inventory changes at that rate.
+]]
+local UPGRADE_INTERVAL = 0.5
+
+local function UpgradeWeapon( bot )
+	if ( bot.CS16NextUpgrade or 0 ) > CurTime() then return end
+	bot.CS16NextUpgrade = CurTime() + UPGRADE_INTERVAL
+
+	-- Defusing pins them in place and takes no weapon; interrupting is rude.
+	if bot.m_bIsDefusing then return end
+
+	local wep = bot:GetActiveWeapon()
+
+	if IsValid( wep ) then
+		local slot = CS16.WeaponSlot( wep )
+
+		-- A grenade or the bomb is a decision, not a fallback.
+		if slot == CS16.SLOT_OTHER then return end
+
+		-- Already holding a primary: there is nothing better to reach for.
+		if slot == CS16.SLOT_PRIMARY then return end
+	end
+
+	local best = CS16.BestWeapon( bot )
+	if not IsValid( best ) or best == wep then return end
+
+	if IsValid( wep ) then
+		local a, b = CS16.WeaponSlot( best ), CS16.WeaponSlot( wep )
+		if a and b and a >= b then return end
+	end
+
+	bot:SelectWeapon( best:GetClass() )
+end
+
 hook.Add( "StartCommand", "CS16.BotCommand", function( bot, cmd )
 	if not bot.CS16Bot then return end
 
@@ -1509,6 +1557,13 @@ hook.Add( "StartCommand", "CS16.BotCommand", function( bot, cmd )
 		case that actually jams: two teams meeting in assault's vent.
 	]]
 	CS16.BotCrouchForNav( bot, cmd )
+
+	--[[
+		Out here for the same reason as the crouch above: a bot that walks over
+		a rifle should end up holding it whether it was patrolling, hunting or
+		standing still when it happened.
+	]]
+	UpgradeWeapon( bot )
 
 	cmd:SetButtons( bit.bor( cmd:GetButtons(), buttons ) )
 end )
